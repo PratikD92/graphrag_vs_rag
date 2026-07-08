@@ -1,0 +1,170 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "black"}, "id": "INSURANCE OMBUDSMAN", "label": "INSURANCE OMBUDSMAN", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "LUCKNOW", "label": "LUCKNOW", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "MUMBAI", "label": "MUMBAI", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "NOIDA", "label": "NOIDA", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "PATNA", "label": "PATNA", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "PUNE", "label": "PUNE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "THANE", "label": "THANE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "ICICI LOMBARD", "label": "ICICI LOMBARD", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA", "label": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "GRIEVANCE REDRESSAL", "label": "GRIEVANCE REDRESSAL", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "BIMA BHAROSA PORTAL", "label": "BIMA BHAROSA PORTAL", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "DISABILITY CERTIFICATE", "label": "DISABILITY CERTIFICATE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "ACCIDENT", "label": "ACCIDENT", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "IL SMART ASSIST ADD-ON", "label": "IL SMART ASSIST ADD-ON", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "COMPANY", "label": "COMPANY", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "INSURED", "label": "INSURED", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA (IRDAI)", "label": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA (IRDAI)", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "POLICY", "label": "POLICY", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "POLLUTION UNDER CONTROL (PUC) CERTIFICATE", "label": "POLLUTION UNDER CONTROL (PUC) CERTIFICATE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "FITNESS CERTIFICATE", "label": "FITNESS CERTIFICATE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "GRIEVANCE CALL CENTRE", "label": "GRIEVANCE CALL CENTRE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "IRDAI", "label": "IRDAI", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "CIOINS", "label": "CIOINS", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "WEBSITE", "label": "WEBSITE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "label": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "CUSTOMER SUPPORT", "label": "CUSTOMER SUPPORT", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "PART 1 OF THE SCHEDULE", "label": "PART 1 OF THE SCHEDULE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "POLLUTION UNDER CONTROL CERTIFICATE", "label": "POLLUTION UNDER CONTROL CERTIFICATE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "NETWORK GARAGE", "label": "NETWORK GARAGE", "shape": "dot"}, {"color": "#97c2fc", "font": {"color": "black"}, "id": "INSURED VEHICLE", "label": "INSURED VEHICLE", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"from": "INSURANCE OMBUDSMAN", "to": "LUCKNOW"}, {"from": "INSURANCE OMBUDSMAN", "to": "MUMBAI"}, {"from": "INSURANCE OMBUDSMAN", "to": "NOIDA"}, {"from": "INSURANCE OMBUDSMAN", "to": "PATNA"}, {"from": "INSURANCE OMBUDSMAN", "to": "PUNE"}, {"from": "INSURANCE OMBUDSMAN", "to": "THANE"}, {"from": "ICICI LOMBARD", "to": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA"}, {"from": "ICICI LOMBARD", "to": "GRIEVANCE REDRESSAL"}, {"from": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA", "to": "BIMA BHAROSA PORTAL"}, {"from": "INSURANCE OMBUDSMAN", "to": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA"}, {"from": "DISABILITY CERTIFICATE", "to": "ACCIDENT"}, {"from": "IL SMART ASSIST ADD-ON", "to": "COMPANY"}, {"from": "INSURED", "to": "COMPANY"}, {"from": "INSURED", "to": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA (IRDAI)"}, {"from": "INSURED", "to": "BIMA BHAROSA PORTAL"}, {"from": "INSURED", "to": "INSURANCE OMBUDSMAN"}, {"from": "POLICY", "to": "COMPANY"}, {"from": "COMPANY", "to": "POLLUTION UNDER CONTROL (PUC) CERTIFICATE"}, {"from": "COMPANY", "to": "FITNESS CERTIFICATE"}, {"from": "GRIEVANCE CALL CENTRE", "to": "INSURANCE OMBUDSMAN"}, {"from": "IRDAI", "to": "INSURANCE OMBUDSMAN"}, {"from": "ICICI LOMBARD", "to": "INSURANCE OMBUDSMAN"}, {"from": "CIOINS", "to": "INSURANCE OMBUDSMAN"}, {"from": "GRIEVANCE CALL CENTRE", "to": "IRDAI"}, {"from": "ICICI LOMBARD", "to": "WEBSITE"}, {"from": "CIOINS", "to": "WEBSITE"}, {"from": "IRDAI", "to": "WEBSITE"}, {"from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "to": "MUMBAI"}, {"from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "to": "IRDAI"}, {"from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "to": "INSURANCE OMBUDSMAN"}, {"from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "to": "GRIEVANCE REDRESSAL"}, {"from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "to": "CUSTOMER SUPPORT"}, {"from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "to": "PART 1 OF THE SCHEDULE"}, {"from": "INSURED", "to": "ICICI LOMBARD"}, {"from": "INSURED", "to": "GRIEVANCE REDRESSAL"}, {"from": "INSURED", "to": "CUSTOMER SUPPORT"}, {"from": "ICICI LOMBARD", "to": "CUSTOMER SUPPORT"}, {"from": "POLLUTION UNDER CONTROL CERTIFICATE", "to": "ICICI LOMBARD"}, {"from": "FITNESS CERTIFICATE", "to": "ICICI LOMBARD"}, {"from": "NETWORK GARAGE", "to": "ICICI LOMBARD"}, {"from": "INSURED VEHICLE", "to": "ICICI LOMBARD"}, {"from": "INSURED", "to": "INSURED VEHICLE"}, {"from": "IRDAI", "to": "BIMA BHAROSA PORTAL"}, {"from": "ICICI LOMBARD", "to": "BIMA BHAROSA PORTAL"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,164 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "INSURED", "label": "INSURED", "shape": "dot", "title": "The term \"insured\" refers to the individual or entity that owns an insurance policy and, consequently, is entitled to receive coverage for specified losses as outlined in the terms of that policy. In the context of ICICI Lombard, the insured party is the individual or entity that has entered into an agreement with the insurance provider to obtain coverage for various risks and losses. This relationship is governed by the specific conditions stipulated in the insurance policy, which define the nature of coverage, the rights of the insured, and the obligations of both parties involved. Overall, the insured plays a crucial role within the framework of insurance, as they are both the beneficiary of the coverage and a participant in the risk management process facilitated by the insurance provider."}, {"color": "#97c2fc", "id": "CUSTOMER SUPPORT", "label": "CUSTOMER SUPPORT", "shape": "dot", "title": "Customer support is a vital service designed to assist customers with their inquiries, issues, and requests concerning their insurance policies. This function encompasses a range of activities aimed at resolving any complaints or questions that customers may have. Customer support not only provides direct assistance but also helps ensure that customers navigate the complexities of their insurance products effectively. Through this service, customers receive the necessary guidance to address their specific needs related to their policies, thereby enhancing their overall experience and satisfaction."}, {"color": "#97c2fc", "id": "IL SMART ASSIST ADD-ON", "label": "IL SMART ASSIST ADD-ON", "shape": "dot", "title": "IL Smart Assist Add-On is an insurance service that includes vehicle assistance services under specific terms and conditions."}, {"color": "#97c2fc", "id": "COMPANY", "label": "COMPANY", "shape": "dot", "title": "Refers to the unnamed entity providing the insurance policy services related to vehicle assistance and claims."}, {"color": "#97c2fc", "id": "GRIEVANCE REDRESSAL", "label": "GRIEVANCE REDRESSAL", "shape": "dot", "title": "Grievance redressal encompasses the structured processes and mechanisms established by insurance providers to address and resolve the complaints and issues presented by insured persons. It serves as a critical system for policyholders to seek resolution of their queries and grievances concerning their insurance policies and associated services. \n\nThis comprehensive approach to grievance redressal ensures that individuals who hold insurance policies can effectively communicate their concerns to the insurance company. The mechanism is designed to handle various complaints, ranging from service inefficiencies to misunderstandings regarding policy terms, thus fostering a supportive environment for policyholders.\n\nIn summary, grievance redressal is an essential function within the insurance sector, acting as a bridge between the insurer and the insured to facilitate satisfactory responses and solutions to insurance-related issues."}, {"color": "#97c2fc", "id": "INSURANCE OMBUDSMAN", "label": "INSURANCE OMBUDSMAN", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "POLLUTION UNDER CONTROL CERTIFICATE", "label": "POLLUTION UNDER CONTROL CERTIFICATE", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "label": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "POLICY", "label": "POLICY", "shape": "dot", "title": "The insurance policy is the contract detailing the terms, conditions, and coverage provided for the insured vehicle."}, {"color": "#97c2fc", "id": "ICICI LOMBARD", "label": "ICICI LOMBARD", "shape": "dot", "title": "ICICI Lombard is a prominent general insurance company in India, engaged in providing a wide range of insurance services to its policyholders, which includes managing claims effectively. Regulated by the Insurance Regulatory and Development Authority of India (IRDAI), ICICI Lombard offers various insurance products tailored to meet the needs of its customers. Among its offerings is motor vehicle insurance, alongside other forms of coverage.\n\nThe company places a strong emphasis on customer service, evident through its website that not only facilitates access to information regarding its insurance products but also provides details about grievance redressal processes. This initiative ensures that customers can easily resolve issues and seek assistance when needed, reinforcing ICICI Lombard\u0027s commitment to customer satisfaction.\n\nIn summary, ICICI Lombard stands out as a reliable insurance provider in India, known for its comprehensive insurance products, efficient claims management, adherence to regulatory standards, and dedication to enhancing customer experience through accessible support services."}, {"color": "#97c2fc", "id": "INSURED VEHICLE", "label": "INSURED VEHICLE", "shape": "dot", "title": "An insured vehicle is any vehicle that has an active policy with ICICI Lombard, providing coverage against specified risks."}, {"color": "#97c2fc", "id": "IRDAI", "label": "IRDAI", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "NETWORK GARAGE", "label": "NETWORK GARAGE", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA", "label": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA", "shape": "dot", "title": "The Insurance Regulatory and Development Authority of India (IRDAI) is the primary regulatory authority responsible for overseeing the insurance industry in India. Its core mandate includes the supervision of insurance companies to ensure consumer protection and to promote fair and transparent practices within the industry. \n\nIRDAI plays a vital role in safeguarding the interests of policyholders while fostering the growth and development of the insurance sector. To facilitate this, the authority has established a grievance redressal framework which includes the Bima Bharosa Portal. This platform enables consumers to lodge complaints and seek assistance with their grievances regarding insurance services. Additionally, IRDAI offers a Grievance Call Centre to further support consumers in resolving their issues effectively.\n\nOverall, IRDAI acts as a crucial regulatory body, dedicated to maintaining a balance between consumer protection and the smooth functioning of insurance services in India."}, {"color": "#97c2fc", "id": "PART 1 OF THE SCHEDULE", "label": "PART 1 OF THE SCHEDULE", "shape": "dot", "title": "Part 1 of the Schedule refers to the section of the insurance policy document that specifies the address of the insured person for receiving notices."}, {"color": "#97c2fc", "id": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA (IRDAI)", "label": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA (IRDAI)", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "WEBSITE", "label": "WEBSITE", "shape": "dot", "title": "Referenced by relationship only"}, {"color": "#97c2fc", "id": "FITNESS CERTIFICATE", "label": "FITNESS CERTIFICATE", "shape": "dot", "title": "The Fitness Certificate is a crucial verification document that confirms a vehicle\u0027s roadworthiness and compliance with safety standards. This certificate serves as an official acknowledgment that a vehicle meets all necessary regulations required for it to operate safely on public roads. Issued to vehicles after thorough inspections, the Fitness Certificate ensures that they are equipped to maintain safety and reliability. It plays a significant role in promoting road safety by ensuring that vehicles adhere to the established benchmark for operational safety."}, {"color": "#97c2fc", "id": "POLLUTION UNDER CONTROL (PUC) CERTIFICATE", "label": "POLLUTION UNDER CONTROL (PUC) CERTIFICATE", "shape": "dot", "title": "The PUC Certificate is a necessary document verifying that the vehicle meets environmental standards and is required for insurance validity."}, {"color": "#97c2fc", "id": "BIMA BHAROSA PORTAL", "label": "BIMA BHAROSA PORTAL", "shape": "dot", "title": "The Bima Bharosa Portal is an online platform established and managed by the Insurance Regulatory and Development Authority of India (IRDAI). This initiative serves as a vital resource for consumers, allowing them to file grievances related to insurance claims. The portal aims to streamline the process of lodging complaints and seeking resolutions for various insurance-related issues that individuals may encounter.\n\nDesigned with user-friendliness in mind, the Bima Bharosa Portal facilitates consumers in navigating their insurance concerns effectively. It specifically addresses grievances pertaining to claims, ensuring that individuals have a direct line to communicate their problems and receive support. Through this platform, the IRDAI demonstrates its commitment to consumer protection and the enhancement of transparency within the insurance sector.\n\nOverall, the Bima Bharosa Portal plays a crucial role in improving the customer experience in the insurance industry in India by providing a structured avenue for grievance redressal."}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "INSURED", "title": "\n        The insured is an individual or entity that holds a policy from ICICI Lombard, thus entering into a contractual relationship\n        Weight: 9.0\n        ", "to": "ICICI LOMBARD"}, {"arrows": "to", "from": "ICICI LOMBARD", "title": "\n        ICICI Lombard customers can access IRDAI services, including the Bima Bharosa Portal for grievances\n        Weight: 1.0\n        ", "to": "BIMA BHAROSA PORTAL"}, {"arrows": "to", "from": "ICICI LOMBARD", "title": "\n        ICICI Lombard is an insurance company that operates under the regulation of the Insurance Regulatory and Development Authority of India (IRDAI). The IRDAI\u0027s role is to ensure that ICICI Lombard adheres to the established insurance laws, thereby promoting transparent and fair practices within the insurance sector. Additionally, ICICI Lombard is subject to oversight by IRDAI concerning its insurance practices, which includes monitoring how the company handles consumer grievances. This regulatory framework is in place to protect policyholders and maintain the integrity of the insurance market in India. Overall, ICICI Lombard\u0027s operations and practices are closely aligned with the requirements set forth by IRDAI, ensuring compliance and consumer protection in all its dealings.\n        Weight: 16.0\n        ", "to": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA"}, {"arrows": "to", "from": "ICICI LOMBARD", "title": "\n        ICICI Lombard offers a dedicated grievance redressal mechanism designed to assist insured individuals and policyholders in resolving disputes and addressing concerns related to the company\u0027s services. This process aims to ensure that customers can effectively raise their issues and seek timely resolutions, thereby enhancing their overall experience with ICICI Lombard. The grievance redressal system reflects the company\u0027s commitment to customer satisfaction, enabling policyholders to voice their grievances and have them addressed appropriately.\n        Weight: 13.0\n        ", "to": "GRIEVANCE REDRESSAL"}, {"arrows": "to", "from": "ICICI LOMBARD", "title": "\n        ICICI Lombard offers customer support services to assist insured individuals with their queries and concerns\n        Weight: 8.0\n        ", "to": "CUSTOMER SUPPORT"}, {"arrows": "to", "from": "INSURED", "title": "\n        The insured holds a policy with the company, receiving protection and assistance in return\n        Weight: 9.0\n        ", "to": "COMPANY"}, {"arrows": "to", "from": "FITNESS CERTIFICATE", "title": "\n        ICICI Lombard stipulates that insured vehicle owners must possess a valid fitness certificate as a condition for coverage\n        Weight: 7.0\n        ", "to": "ICICI LOMBARD"}, {"arrows": "to", "from": "INSURED VEHICLE", "title": "\n        The insured vehicle is covered by ICICI Lombard\u0027s policy providing financial protection against specified losses\n        Weight: 8.0\n        ", "to": "ICICI LOMBARD"}, {"arrows": "to", "from": "INSURED", "title": "\n        The insured can use the Bima Bharosa Portal for addressing grievances regarding their insurance claims\n        Weight: 6.0\n        ", "to": "BIMA BHAROSA PORTAL"}, {"arrows": "to", "from": "BIMA BHAROSA PORTAL", "title": "\n        Insured individuals may use the Bima Bharosa Portal to lodge complaints regarding their insurance policies\n        Weight: 1.0\n        ", "to": "INSURED"}, {"arrows": "to", "from": "INSURED", "title": "\n        Insured individuals can utilize the grievance redressal process to address their complaints related to ICICI Lombard\u0027s services\n        Weight: 7.0\n        ", "to": "GRIEVANCE REDRESSAL"}, {"arrows": "to", "from": "INSURED", "title": "\n        Insured individuals may contact customer support for assistance with their insurance needs and to resolve issues\n        Weight: 7.0\n        ", "to": "CUSTOMER SUPPORT"}, {"arrows": "to", "from": "INSURED", "title": "\n        The insured individual holds an insurance policy for the insured vehicle, creating a financial contract between them\n        Weight: 1.0\n        ", "to": "INSURED VEHICLE"}, {"arrows": "to", "from": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA", "title": "\n        IRDAI operates the Bima Bharosa Portal as a mechanism for consumers to address grievances related to insurance matters.\n        Weight: 9.0\n        ", "to": "BIMA BHAROSA PORTAL"}, {"arrows": "to", "from": "COMPANY", "title": "\n        The company mandates a valid Fitness Certificate for the policy to remain effective\n        Weight: 1.0\n        ", "to": "FITNESS CERTIFICATE"}, {"arrows": "to", "from": "IL SMART ASSIST ADD-ON", "title": "\n        The IL Smart Assist Add-On is a service provided by the company as part of their insurance offerings\n        Weight: 8.0\n        ", "to": "COMPANY"}, {"arrows": "to", "from": "POLICY", "title": "\n        The policy is a product of the company, outlining the specifics of coverage and liabilities\n        Weight: 8.0\n        ", "to": "COMPANY"}, {"arrows": "to", "from": "COMPANY", "title": "\n        The company requires a valid PUC Certificate as a condition for maintaining the insurance policy\n        Weight: 7.0\n        ", "to": "POLLUTION UNDER CONTROL (PUC) CERTIFICATE"}, {"arrows": "to", "from": "ICICI LOMBARD", "title": "\n        ICICI Lombard is an insurance provider that offers a range of services to its clients. In instances where customers face unresolved grievances or issues with their insurance policies, they have the option to escalate these problems to the Insurance Ombudsman. The role of the Insurance Ombudsman is to serve as an independent authority that helps resolve complaints in a fair and effective manner.\n\nCustomers of ICICI Lombard are encouraged to utilize the Insurance Ombudsman as a recourse for grievance resolution. This process ensures that any disputes or dissatisfaction with the services provided by ICICI Lombard can be addressed in a structured manner, enabling customers to seek justice and clarification regarding their issues. Therefore, ICICI Lombard consumers have a reliable avenue for appealing and resolving grievances through the Insurance Ombudsman, reflecting a commitment to customer service and satisfaction.\n        Weight: 12.0\n        ", "to": "INSURANCE OMBUDSMAN"}, {"arrows": "to", "from": "INSURED", "title": "\n        The insured can approach the Insurance Ombudsman for grievance redressal if satisfactory resolution is not achieved\n        Weight: 1.0\n        ", "to": "INSURANCE OMBUDSMAN"}, {"arrows": "to", "from": "INSURANCE OMBUDSMAN", "title": "\n        The Insurance Ombudsman serves as a resource for grievance redressal under the jurisdiction laid out by IRDAI.\n        Weight: 1.0\n        ", "to": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA"}, {"arrows": "to", "from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "title": "\n        ICICI Lombard has established a grievance redressal mechanism for its insured persons to address complaints.\n        Weight: 9.0\n        ", "to": "GRIEVANCE REDRESSAL"}, {"arrows": "to", "from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "title": "\n        ICICI Lombard provides customer support services to assist insured persons with inquiries and issues.\n        Weight: 9.0\n        ", "to": "CUSTOMER SUPPORT"}, {"arrows": "to", "from": "ICICI LOMBARD GENERAL INSURANCE COMPANY LIMITED", "title": "\n        Part 1 of the Schedule is integral to the insurance policy provided by ICICI Lombard, indicating how notices are served to insured persons.\n        Weight: 1.0\n        ", "to": "PART 1 OF THE SCHEDULE"}, {"arrows": "to", "from": "ICICI LOMBARD", "title": "\n        ICICI Lombard has a website that includes information about the grievance redressal process\n        Weight: 6.0\n        ", "to": "WEBSITE"}, {"arrows": "to", "from": "POLLUTION UNDER CONTROL CERTIFICATE", "title": "\n        ICICI Lombard requires insured vehicle owners to hold a valid PUC certificate as a condition of their vehicle insurance\n        Weight: 7.0\n        ", "to": "ICICI LOMBARD"}, {"arrows": "to", "from": "NETWORK GARAGE", "title": "\n        The network garages work closely with ICICI Lombard to provide repair services for insured vehicles covered under the company\u0027s policies\n        Weight: 6.0\n        ", "to": "ICICI LOMBARD"}, {"arrows": "to", "from": "INSURED", "title": "\n        The insured may approach IRDAI for grievance redressal related to their insurance policy\n        Weight: 5.0\n        ", "to": "INSURANCE REGULATORY AND DEVELOPMENT AUTHORITY OF INDIA (IRDAI)"}, {"arrows": "to", "from": "IRDAI", "title": "\n        IRDAI provides a grievance redressal platform through the Bima Bharosa Portal\n        Weight: 8.0\n        ", "to": "BIMA BHAROSA PORTAL"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "forceAtlas2Based": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.01,
+            "damping": 0.4,
+            "gravitationalConstant": -50,
+            "springConstant": 0.08,
+            "springLength": 100
+        },
+        "solver": "forceAtlas2Based",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
