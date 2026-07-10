@@ -52,4 +52,4 @@ for _, row in gold.iterrows():
     print(f"Time -> {total_latency/1000:.2f} s\n")
 df = pd.DataFrame(rows)
 
-df.to_csv(current_dir / "graphrag_results.csv", index=False)
+df.to_csv(current_dir / "graphrag_run_dataset.csv", index=False)

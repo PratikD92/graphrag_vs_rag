@@ -17,8 +17,8 @@ parent_dir = Path(__file__).parent.parent
 load_dotenv(parent_dir / ".env")
 
 
-# df = pd.read_csv(current_dir / "rag_results.csv")
-df = pd.read_csv(current_dir / "graphrag_results.csv")
+# df = pd.read_csv(current_dir / "rag_run_dataset.csv")
+df = pd.read_csv(current_dir / "graphrag_run_dataset.csv")
 # print(df.head())
 
 dataset = Dataset.from_dict(
@@ -42,6 +42,7 @@ results = evaluate(
 )
 print(results)
 results.to_pandas().to_csv(
+    # current_dir / "ragas_rag_scores.csv",
     current_dir / "ragas_graphrag_scores.csv",
     index=False,
 )

@@ -55,4 +55,4 @@ for _, row in gold.iterrows():
 
 df = pd.DataFrame(rows)
 
-df.to_csv("evaluation/rag_results.csv", index=False)
+df.to_csv("evaluation/rag_run_dataset.csv", index=False)
