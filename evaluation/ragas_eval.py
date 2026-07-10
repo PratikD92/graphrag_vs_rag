@@ -11,14 +11,17 @@ from ragas.metrics import (
 from dotenv import load_dotenv
 from pathlib import Path
 import pandas as pd
+import time
 
 current_dir = Path(__file__).parent
 parent_dir = Path(__file__).parent.parent
 load_dotenv(parent_dir / ".env")
 
+# mode = "graphrag"
+mode = "rag"
 
 # df = pd.read_csv(current_dir / "rag_run_dataset.csv")
-df = pd.read_csv(current_dir / "graphrag_run_dataset.csv")
+df = pd.read_csv(current_dir / f"{mode}_run_dataset.csv")
 # print(df.head())
 
 dataset = Dataset.from_dict(
@@ -35,14 +38,16 @@ results = evaluate(
     dataset,
     metrics=[
         AnswerCorrectness(),
+        AnswerRelevancy(),
         Faithfulness(),
         ContextPrecision(),
         ContextRecall(),
     ],
 )
 print(results)
+timestamp = time.strftime("%Y%m%d_%H%M")
 results.to_pandas().to_csv(
-    # current_dir / "ragas_rag_scores.csv",
-    current_dir / "ragas_graphrag_scores.csv",
+    # current_dir / "eval_scores" / "ragas_rag_scores.csv",
+    current_dir / "eval_scores" / f"ragas_{mode}_{timestamp}_scores.csv",
     index=False,
 )

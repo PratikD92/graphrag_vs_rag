@@ -12,7 +12,7 @@ rows = []
 questions = len(gold)
 
 for _, row in gold.iterrows():
-    if _ >= 1:  # Process only first 5 questions
+    if _ >= 5:  # Process only first 5 questions
         break
 
     print(f"Processing query {_+1}/{questions}")

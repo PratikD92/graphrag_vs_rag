@@ -12,8 +12,8 @@ load_dotenv(parent_dir / ".env")
 
 metric = HallucinationMetric()
 
-df = pd.read_csv(current_dir / "rag_results.csv")
-# df = pd.read_csv(current_dir / "graphrag_results.csv")
+# df = pd.read_csv(current_dir / "rag_run_dataset.csv")
+df = pd.read_csv(current_dir / "graphrag_run_dataset.csv")
 
 test_cases = []
 
@@ -23,14 +23,12 @@ for _, row in df.iterrows():
         input=row["question"],
         actual_output=row["generated_answer"],
         expected_output=row["expected_answer"],
-        retrieval_context=[row["retrieved_context"]],
+        context=[row["retrieved_context"]],
     )
 
     test_cases.append(tc)
 
-print(test_cases[0].__dict__.keys())
-
-# evaluate(
-#     test_cases=test_cases,
-#     metrics=[metric],
-# )
+evaluate(
+    test_cases=test_cases,
+    metrics=[metric],
+)
