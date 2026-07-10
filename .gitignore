@@ -6,5 +6,6 @@ __pycache__
 .dockerignore
 cache/
 logs/
-.evaluation/.deepeval/
-.evaluation/.deepeval/*
+evaluation/.deepeval/
+evaluation/.deepeval/*
+evaluation/eval_scores/.~*
