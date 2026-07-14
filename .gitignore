@@ -9,3 +9,4 @@ logs/
 evaluation/.deepeval/
 evaluation/.deepeval/*
 evaluation/eval_scores/.~*
+.~*

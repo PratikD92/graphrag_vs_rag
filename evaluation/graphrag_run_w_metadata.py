@@ -28,9 +28,11 @@ gold = pd.read_csv(current_dir / "golden_dataset.csv")
 rows = []
 questions = len(gold)
 
-for _, row in gold.iterrows():
-    if _ >= 5:  # Process only first 5 questions
-        break
+# for _, row in gold.iterrows():
+for _, row in gold[34:].iterrows():
+
+    # if _ >= 5:  # Process only first 5 questions
+    #     break
     print(f"Processing query {_+1}/{questions}")
     question = row["question"]
     answer, context, total_latency = asyncio.run(generate(query=question))
@@ -52,4 +54,4 @@ for _, row in gold.iterrows():
     print(f"Time -> {total_latency/1000:.2f} s\n")
 df = pd.DataFrame(rows)
 
-df.to_csv(current_dir / "graphrag_run_dataset.csv", index=False)
+df.to_csv(current_dir / "graphrag_numerical_run_dataset2.csv", index=False)

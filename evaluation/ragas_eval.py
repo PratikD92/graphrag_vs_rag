@@ -21,7 +21,7 @@ load_dotenv(parent_dir / ".env")
 mode = "rag"
 
 # df = pd.read_csv(current_dir / "rag_run_dataset.csv")
-df = pd.read_csv(current_dir / f"{mode}_run_dataset.csv")
+df = pd.read_csv(current_dir / f"{mode}_numerical_run_dataset2.csv")
 # print(df.head())
 
 dataset = Dataset.from_dict(
@@ -48,6 +48,6 @@ print(results)
 timestamp = time.strftime("%Y%m%d_%H%M")
 results.to_pandas().to_csv(
     # current_dir / "eval_scores" / "ragas_rag_scores.csv",
-    current_dir / "eval_scores" / f"ragas_{mode}_{timestamp}_scores.csv",
+    current_dir / "eval_scores" / f"ragas_{mode}_numerical_{timestamp}_scores2.csv",
     index=False,
 )

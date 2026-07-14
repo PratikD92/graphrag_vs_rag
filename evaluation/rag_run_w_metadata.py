@@ -11,9 +11,11 @@ gold = pd.read_csv(current_dir / "golden_dataset.csv")
 rows = []
 questions = len(gold)
 
-for _, row in gold.iterrows():
-    if _ >= 5:  # Process only first 5 questions
-        break
+for _, row in gold[34:].iterrows():
+    # for _, row in gold.iterrows():
+    # print(f'Question: {row["question"]}')
+    # if _ >= 5:  # Process only first 5 questions
+    #     break
 
     print(f"Processing query {_+1}/{questions}")
 
@@ -55,4 +57,4 @@ for _, row in gold.iterrows():
 
 df = pd.DataFrame(rows)
 
-df.to_csv("evaluation/rag_run_dataset.csv", index=False)
+df.to_csv("evaluation/rag_numerical_run_dataset2.csv", index=False)
