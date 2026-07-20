@@ -22,3 +22,9 @@ EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
 # Chunking strategy
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
+
+
+# Collection nameing convention
+COLLECTION_NAME = (
+    f"ICICI_Policy_documents_{EMBEDDING_MODEL}_{CHUNK_SIZE}_{CHUNK_OVERLAP}"
+).replace("-", "_")

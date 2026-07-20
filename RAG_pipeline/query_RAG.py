@@ -4,7 +4,7 @@ from .prompt_gen import generate_prompt
 from dotenv import load_dotenv
 from openai import OpenAI
 import os, time
-from .config import RAG_LLM_MODEL
+from .config import RAG_LLM_MODEL, COLLECTION_NAME
 
 # from config
 load_dotenv("../.env")
@@ -18,7 +18,7 @@ def retrieve_chunks(query_text: str):
     client = get_weaviate_client()
 
     try:
-        collection = client.collections.use("ICICI_Policy_documents")
+        collection = client.collections.use(COLLECTION_NAME)
 
         raw = collection.query.hybrid(
             query=query_text,

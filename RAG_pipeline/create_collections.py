@@ -3,7 +3,7 @@ Creates weaviate collections as per the embedding model, chunk size and overlap 
 """
 
 from .weaviate_client import get_weaviate_client
-from .config import EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
+from .config import EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, COLLECTION_NAME
 from weaviate.classes.config import Configure, Property, DataType
 from .upload_batch_weaviate import upload_batch
 
@@ -16,9 +16,7 @@ print(
 def create_collection(EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP):
     client = get_weaviate_client()
 
-    collection_name = (
-        f"ICICI_Policy_documents_{EMBEDDING_MODEL}_{CHUNK_SIZE}_{CHUNK_OVERLAP}"
-    ).replace("-", "_")
+    collection_name = COLLECTION_NAME
 
     if client.collections.exists(collection_name):
         print(f"Collection {collection_name} already exists")
