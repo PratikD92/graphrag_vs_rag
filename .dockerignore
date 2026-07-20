@@ -1,0 +1,5 @@
+*.html
+*.ipynb
+*.pyc
+__pycache__
+.env

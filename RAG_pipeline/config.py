@@ -15,3 +15,10 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # LLM model for RAG
 RAG_LLM_MODEL = os.getenv("RAG_LLM_MODEL")
+
+# Embedding model
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL")
+
+# Chunking strategy
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP"))
