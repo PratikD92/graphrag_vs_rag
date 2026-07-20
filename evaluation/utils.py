@@ -21,7 +21,39 @@ from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
 
 
-def save_run_results(current_run_dir, mode, rows):
+def get_run_dir(current_dir):
+    runs_dir = current_dir / "runs"
+    if not runs_dir.exists():
+        runs_dir.mkdir()
+
+    # Find existing run_# directories and get the highest number
+    existing_run_numbers = []
+    for d in runs_dir.iterdir():
+        if d.is_dir() and d.name.startswith("run_"):
+            suffix = d.name[len("run_") :]
+            if suffix.isdigit():
+                existing_run_numbers.append(int(suffix))
+
+    last_run = max(existing_run_numbers, default=0)
+    last_run_dir = runs_dir / f"run_{last_run}"
+
+    # Reuse the last run directory if it exists and is empty
+    if last_run > 0 and last_run_dir.exists() and not any(last_run_dir.iterdir()):
+        current_run = last_run
+        current_run_dir = last_run_dir
+    else:
+        current_run = last_run + 1
+        current_run_dir = runs_dir / f"run_{current_run}"
+        current_run_dir.mkdir()
+
+
+def save_intermediate_run_results(current_run_dir, mode, rows):
+    """
+    Saves intermediate results of running graphRAG/RAG over golden dataset to capture
+    question, expected_answer, source, retrieved_context, generated_answer,
+    total_latency_ms, prompt_tokens, completion_tokens, total_tokens
+    in a csv
+    """
     df = pd.DataFrame(rows)
     df.to_csv(current_run_dir / f"{mode}_run_results.csv", index=False)
     print(f"{mode} runs saved to {current_run_dir / f'{mode}_run_results.csv'}")
@@ -41,7 +73,7 @@ def stringify_graphrag_context(context):
 
         parts.append(df.to_string())
 
-    return "\n\n".join(parts)
+    return "\n".join(parts)
 
 
 def create_dataset(df):

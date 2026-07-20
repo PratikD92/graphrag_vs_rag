@@ -17,37 +17,20 @@ import time
 
 from RAG_pipeline.query_RAG import generate_rag_answer
 from query_graph import generate
-from .utils import save_run_results, score_and_save, stringify_graphrag_context
-
+from .utils import (
+    save_intermediate_run_results,
+    score_and_save,
+    stringify_graphrag_context,
+    get_run_dir,
+)
 
 current_dir = Path(__file__).parent
 parent_dir = Path(__file__).parent.parent
 load_dotenv(parent_dir / ".env")
 
-runs_dir = current_dir / "runs"
-if not runs_dir.exists():
-    runs_dir.mkdir()
 
-# Find existing run_# directories and get the highest number
-existing_run_numbers = []
-for d in runs_dir.iterdir():
-    if d.is_dir() and d.name.startswith("run_"):
-        suffix = d.name[len("run_") :]
-        if suffix.isdigit():
-            existing_run_numbers.append(int(suffix))
-
-last_run = max(existing_run_numbers, default=0)
-last_run_dir = runs_dir / f"run_{last_run}"
-
-# Reuse the last run directory if it exists and is empty
-if last_run > 0 and last_run_dir.exists() and not any(last_run_dir.iterdir()):
-    current_run = last_run
-    current_run_dir = last_run_dir
-else:
-    current_run = last_run + 1
-    current_run_dir = runs_dir / f"run_{current_run}"
-    current_run_dir.mkdir()
-
+# Create and use run directory in incremental fashion to store runs
+current_run_dir = get_run_dir(current_dir)
 
 modes = ["graphrag", "rag"]
 
@@ -98,7 +81,7 @@ for mode in modes:
             # print(f"Time -> {total_latency/1000:.2f} s\n")
 
         # Save intermediate run results
-        run_df = save_run_results(current_run_dir, mode, rows)
+        run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
         # Evaluate, Score and save results
         score_and_save(run_df, current_run_dir, mode)
@@ -130,7 +113,7 @@ for mode in modes:
             # print(f"Time -> {total_latency/1000:.2f} s\n")
 
         # Save intermediate run results
-        run_df = save_run_results(current_run_dir, mode, rows)
+        run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
         # Evaluate, Score and save results
         score_and_save(run_df, current_run_dir, mode)

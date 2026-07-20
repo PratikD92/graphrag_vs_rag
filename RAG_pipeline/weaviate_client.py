@@ -19,7 +19,7 @@ def get_weaviate_client() -> Any:
     )
 
     if client.is_ready():
-        print("Weaviate client is ready.")
+        # print("Weaviate client is ready.")
         return client
     else:
         raise HTTPException(
