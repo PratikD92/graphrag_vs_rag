@@ -22,11 +22,12 @@ from .utils import (
     score_and_save,
     stringify_graphrag_context,
     get_run_dir,
+    rag_query_cost_calculator,
 )
 
 current_dir = Path(__file__).parent
-parent_dir = Path(__file__).parent.parent
-load_dotenv(parent_dir / ".env")
+# parent_dir = Path(__file__).parent.parent
+# load_dotenv(parent_dir / ".env")
 
 
 # Create and use run directory in incremental fashion to store runs
@@ -83,8 +84,11 @@ for mode in modes:
         # Save intermediate run results
         run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
+        # Calculate costs
+        cost_df = rag_query_cost_calculator(run_df)
+
         # Evaluate, Score and save results
-        score_and_save(run_df, current_run_dir, mode)
+        score_and_save(cost_df, current_run_dir, mode)
 
     else:
         for _, row in gold.iterrows():

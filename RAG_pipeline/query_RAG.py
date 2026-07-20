@@ -4,6 +4,7 @@ from .prompt_gen import generate_prompt
 from dotenv import load_dotenv
 from openai import OpenAI
 import os, time
+from .config import RAG_LLM_MODEL
 
 # from config
 load_dotenv("../.env")
@@ -73,7 +74,7 @@ def generate_rag_answer(query):
     llm_start = time.perf_counter()
 
     response = openai_client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=RAG_LLM_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
     )

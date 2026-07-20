@@ -13,6 +13,7 @@ from ragas.metrics import (
 # COSTING
 # For RAG
 from litellm import cost_per_token
+from .config import LLM_MODEL, EMBEDDING_MODEL
 
 # For ragas
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -93,9 +94,9 @@ def score_and_save(df, current_run_dir, mode):
     # df = pd.read_csv(current_run_dir / f"{mode}_run_results.csv")
     dataset = create_dataset(df)
 
-    evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model="gpt-4o-mini"))
+    evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model=LLM_MODEL))
     evaluator_embeddings = LangchainEmbeddingsWrapper(
-        OpenAIEmbeddings(model="text-embedding-3-small")
+        OpenAIEmbeddings(model=EMBEDDING_MODEL)
     )
 
     with get_openai_callback() as cb:
@@ -138,24 +139,24 @@ def score_and_save_without_cost(df, current_run_dir, mode):
     print(f"{mode} scores saved to {current_run_dir / f'{mode}_scores.csv'}")
 
 
-def rag_query_cost_calculator():
+def rag_query_cost_calculator(run_df):
     # To be integrated with run_ragas_eval while iteration happens there
-    df = pd.read_csv("runs/run_1/rag_run_results.csv")
+    # df = pd.read_csv("runs/run_1/rag_run_results.csv")
 
-    for _, row in df.iterrows():
+    for _, row in run_df.iterrows():
         prompt_tokens = row["prompt_tokens"]
         completion_tokens = row["completion_tokens"]
 
         prompt_cost, completion_cost_ = cost_per_token(
-            model="gpt-4o",
+            model=LLM_MODEL,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
         )
         total_cost = prompt_cost + completion_cost_
-        df.at[row.name, "cost"] = f"${round(total_cost, 4)}"
-    df.to_csv("runs/run_1/rag_costs.csv", index=False)
+        run_df.at[row.name, "cost"] = f"${round(total_cost, 4)}"
+    # df.to_csv("runs/run_1/rag_costs.csv", index=False)
     # return total_cost
-    return df
+    return run_df
 
 
 # Checking cost calculation

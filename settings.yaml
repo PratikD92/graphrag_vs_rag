@@ -7,7 +7,7 @@
 completion_models:
   default_completion_model:
     model_provider: openai
-    model: gpt-4o-mini
+    model: ${GRAPHRAG_COMPLETION_LLM_MODEL}
     auth_method: api_key # or azure_managed_identity
     api_key: ${GRAPHRAG_API_KEY} # set this in the generated .env file, or remove if managed identity
     retry:
@@ -16,7 +16,7 @@ completion_models:
 embedding_models:
   default_embedding_model:
     model_provider: openai
-    model: text-embedding-3-small
+    model: ${EMBEDDING_MODEL}
     auth_method: api_key
     api_key: ${GRAPHRAG_API_KEY}
     retry:
@@ -29,8 +29,8 @@ input:
 
 chunking:
   type: tokens
-  size: 1200
-  overlap: 100
+  size: ${CHUNK_SIZE}
+  overlap: ${CHUNK_OVERLAP}
   encoding_model: o200k_base
 
 ### Storage settings ###

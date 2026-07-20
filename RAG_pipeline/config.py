@@ -12,3 +12,6 @@ WEAVIATE_API_KEY = os.getenv("WEAVIATE_API_KEY")
 
 # OpenAI configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+# LLM model for RAG
+RAG_LLM_MODEL = os.getenv("RAG_LLM_MODEL")
