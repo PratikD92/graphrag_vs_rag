@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from .config import WEAVIATE_API_KEY, WEAVIATE_URL, OPENAI_API_KEY
 
 
-# @lru_cache(maxsize=1)
+@lru_cache(maxsize=1)
 def get_weaviate_client() -> Any:
 
     client = weaviate.connect_to_weaviate_cloud(

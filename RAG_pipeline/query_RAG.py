@@ -46,8 +46,8 @@ def retrieve_chunks(query_text: str):
         return []
         # raise Exception(f"Weaviate query failed: {exc}")
 
-    finally:
-        client.close()
+    # finally:
+    #     client.close()
 
 
 # query = """A truck driver is injured during an accident.

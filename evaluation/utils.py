@@ -1,25 +1,28 @@
 import pandas as pd
 from datasets import Dataset
 from ragas import evaluate
-
+from ragas.llms import llm_factory
+from ragas.embeddings.base import embedding_factory
+from openai import AsyncOpenAI
 from ragas.metrics import (
     Faithfulness,
     AnswerCorrectness,
     AnswerRelevancy,
-    LLMContextPrecisionWithReference,
-    LLMContextRecall,
+    ContextPrecision,
+    ContextRecall,
 )
 
 # COSTING
 # For RAG
 from litellm import cost_per_token
-from .config import LLM_MODEL, EMBEDDING_MODEL
+from .config import EVALUATION_EMBEDDING_MODEL, EVALUATION_LLM_MODEL, EVALUATION_API_KEY
 
 # For ragas
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.callbacks import get_openai_callback
-from ragas.llms import LangchainLLMWrapper
-from ragas.embeddings import LangchainEmbeddingsWrapper
+
+# from ragas.llms import LangchainLLMWrapper
+# from ragas.embeddings import LangchainEmbeddingsWrapper
 
 
 def get_run_dir(current_dir):
@@ -46,6 +49,7 @@ def get_run_dir(current_dir):
         current_run = last_run + 1
         current_run_dir = runs_dir / f"run_{current_run}"
         current_run_dir.mkdir()
+    return current_run_dir
 
 
 def save_intermediate_run_results(current_run_dir, mode, rows):
@@ -94,9 +98,15 @@ def score_and_save(df, current_run_dir, mode):
     # df = pd.read_csv(current_run_dir / f"{mode}_run_results.csv")
     dataset = create_dataset(df)
 
-    evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model=LLM_MODEL))
-    evaluator_embeddings = LangchainEmbeddingsWrapper(
-        OpenAIEmbeddings(model=EMBEDDING_MODEL)
+    # evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model=EVALUATION_LLM_MODEL))
+    # evaluator_embeddings = LangchainEmbeddingsWrapper(
+    #     OpenAIEmbeddings(model=EVALUATION_EMBEDDING_MODEL)
+    # )
+
+    client = AsyncOpenAI(api_key=EVALUATION_API_KEY)
+    evaluator_llm = llm_factory(EVALUATION_LLM_MODEL, client=client)
+    evaluator_embeddings = embedding_factory(
+        provider="openai", model=EVALUATION_EMBEDDING_MODEL, client=client
     )
 
     with get_openai_callback() as cb:
@@ -106,8 +116,8 @@ def score_and_save(df, current_run_dir, mode):
                 AnswerCorrectness(),
                 AnswerRelevancy(),
                 Faithfulness(),
-                LLMContextPrecisionWithReference(),
-                LLMContextRecall(),
+                ContextPrecision(),
+                ContextRecall(),
             ],
             llm=evaluator_llm,
             embeddings=evaluator_embeddings,
@@ -148,7 +158,27 @@ def rag_query_cost_calculator(run_df):
         completion_tokens = row["completion_tokens"]
 
         prompt_cost, completion_cost_ = cost_per_token(
-            model=LLM_MODEL,
+            model=EVALUATION_LLM_MODEL,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+        )
+        total_cost = prompt_cost + completion_cost_
+        run_df.at[row.name, "cost"] = f"${round(total_cost, 4)}"
+    # df.to_csv("runs/run_1/rag_costs.csv", index=False)
+    # return total_cost
+    return run_df
+
+
+def rag_per_query_cost_calculator(run_df):
+    # To be integrated with run_ragas_eval while iteration happens there
+    # df = pd.read_csv("runs/run_1/rag_run_results.csv")
+
+    for _, row in run_df.iterrows():
+        prompt_tokens = row["prompt_tokens"]
+        completion_tokens = row["completion_tokens"]
+
+        prompt_cost, completion_cost_ = cost_per_token(
+            model=EVALUATION_LLM_MODEL,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
         )

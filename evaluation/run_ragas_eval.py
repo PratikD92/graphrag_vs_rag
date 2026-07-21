@@ -1,19 +1,21 @@
 from ragas import evaluate
 from datasets import Dataset
 
-from ragas.metrics import (
-    Faithfulness,
-    AnswerCorrectness,
-    AnswerRelevancy,
-    ContextPrecision,
-    ContextRecall,
-)
+# from ragas.metrics import (
+#     Faithfulness,
+#     AnswerCorrectness,
+#     AnswerRelevancy,
+#     ContextPrecision,
+#     ContextRecall,
+# )
 from dotenv import load_dotenv
 from pathlib import Path
 import pandas as pd
 import os
 import asyncio
 import time
+import yaml
+from datetime import datetime
 
 from RAG_pipeline.query_RAG import generate_rag_answer
 from query_graph import generate
@@ -24,6 +26,7 @@ from .utils import (
     get_run_dir,
     rag_query_cost_calculator,
 )
+from .config import EVALUATION_LLM_MODEL, EVALUATION_EMBEDDING_MODEL
 
 current_dir = Path(__file__).parent
 # parent_dir = Path(__file__).parent.parent
@@ -32,18 +35,25 @@ current_dir = Path(__file__).parent
 
 # Create and use run directory in incremental fashion to store runs
 current_run_dir = get_run_dir(current_dir)
+golden_csv = "golden_dataset.csv"
 
-modes = ["graphrag", "rag"]
+# modes = ["graphrag", "rag"]
+modes = ["rag"]
 
 # Load golden dataset
-gold = pd.read_csv(current_dir / "golden_dataset.csv")
+gold = pd.read_csv(current_dir / golden_csv)
 questions = len(gold)
+
+
+async def generate_async(query: str):
+    return await generate(query=query)
+
 
 for mode in modes:
     rows = []
     print(f"Evaluating for: {mode}")
     if mode == "rag":
-        for _, row in gold.iterrows():
+        for _, row in gold[:1].iterrows():
             # print(f"Processing query {_+1}/{questions}")
             print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
 
@@ -98,7 +108,8 @@ for mode in modes:
             # print(f"Processing query {_+1}/{questions}")
             print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
             question = row["question"]
-            answer, context, total_latency = asyncio.run(generate(query=question))
+            # answer, context, total_latency = asyncio.run(generate(query=question))
+            answer, context, total_latency = asyncio.run(generate_async(query=question))
 
             rows.append(
                 {
@@ -121,3 +132,22 @@ for mode in modes:
 
         # Evaluate, Score and save results
         score_and_save(run_df, current_run_dir, mode)
+
+# Save yaml configuration for this run
+configuration = {
+    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "golden_csv": golden_csv,
+    "questions": questions,
+    "evaluation_llm_model": EVALUATION_LLM_MODEL,
+    "evaluation_embedding_model": EVALUATION_EMBEDDING_MODEL,
+    "LLM model (GraphRAG & RAG)": EVALUATION_LLM_MODEL,
+    "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
+    "Costing": {
+        "RAG": cost_df["cost"].sum(),
+        "RAG_Evaluation": "To be calculated",
+        "GraphRAG": "To be calculated",
+        "GraphRAG_Evaluation": "To be calculated",
+    },
+}
+with open(current_run_dir / "config.yaml", "w") as f:
+    yaml.dump(configuration, f)
