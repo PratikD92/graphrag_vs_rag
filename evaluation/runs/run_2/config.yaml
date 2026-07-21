@@ -1,0 +1,10 @@
+Costing:
+  GraphRAG: To be calculated
+  GraphRAG_Evaluation: $0.0135
+Embedding model (GraphRAG & RAG): text-embedding-3-small
+LLM model (GraphRAG & RAG): gpt-4o-mini
+evaluation_embedding_model: text-embedding-3-small
+evaluation_llm_model: gpt-4o-mini
+golden_csv: golden_dataset.csv
+questions: 35
+timestamp: '2026-07-21 19:59:15'

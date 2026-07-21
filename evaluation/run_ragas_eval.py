@@ -18,7 +18,7 @@ import yaml
 from datetime import datetime
 
 from RAG_pipeline.query_RAG import generate_rag_answer
-from query_graph import generate
+from query_graph import generate, generate_with_cost
 from .utils import (
     save_intermediate_run_results,
     score_and_save,
@@ -47,6 +47,10 @@ questions = len(gold)
 
 async def generate_async(query: str):
     return await generate(query=query)
+
+
+async def generate_with_cost_async(query: str):
+    return await generate_with_cost(query=query)
 
 
 for mode in modes:
@@ -101,15 +105,16 @@ for mode in modes:
         rag_eval_cost = score_and_save(rag_cost_df, current_run_dir, mode)
 
     else:
-        for _, row in gold[:1].iterrows():
+        for _, row in gold[:2].iterrows():
 
             # if _ >= 5:  # Process only first 5 questions
             #     break
             # print(f"Processing query {_+1}/{questions}")
             print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
             question = row["question"]
-            # answer, context, total_latency = asyncio.run(generate(query=question))
-            answer, context, total_latency = asyncio.run(generate_async(query=question))
+            answer, context, total_latency, query_cost = asyncio.run(
+                generate_with_cost_async(query=question)
+            )
 
             rows.append(
                 {
@@ -119,10 +124,10 @@ for mode in modes:
                     "retrieved_context": stringify_graphrag_context(context),
                     "generated_answer": answer,
                     "total_latency_ms": f"{total_latency:.2f}",
-                    # GraphRAG currently doesn't expose token usage
-                    "prompt_tokens": 0,
-                    "completion_tokens": 0,
-                    "total_tokens": 0,
+                    "prompt_tokens": query_cost["prompt_tokens"],
+                    "completion_tokens": query_cost["completion_tokens"],
+                    "total_tokens": query_cost["total_tokens"],
+                    "cost": query_cost["total_cost"],
                 }
             )
             # print(f"Time -> {total_latency/1000:.2f} s\n")
@@ -143,8 +148,8 @@ configuration = {
     "LLM model (GraphRAG & RAG)": EVALUATION_LLM_MODEL,
     "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
     "Costing": {
-        "RAG": rag_cost_df["cost"].sum(),
-        "RAG_Evaluation": f"${rag_eval_cost:.4f}",
+        # "RAG": rag_cost_df["cost"].sum(),
+        # "RAG_Evaluation": f"${rag_eval_cost:.4f}",
         "GraphRAG": "To be calculated",
         "GraphRAG_Evaluation": f"${graphrag_eval_cost:.4f}",
     },
