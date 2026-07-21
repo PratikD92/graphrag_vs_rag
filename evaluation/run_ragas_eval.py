@@ -37,8 +37,8 @@ current_dir = Path(__file__).parent
 current_run_dir = get_run_dir(current_dir)
 golden_csv = "golden_dataset.csv"
 
-# modes = ["graphrag", "rag"]
-modes = ["rag"]
+# modes = ["rag", "graphrag"]
+modes = ["graphrag"]
 
 # Load golden dataset
 gold = pd.read_csv(current_dir / golden_csv)
@@ -95,13 +95,13 @@ for mode in modes:
         run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
         # Calculate costs
-        cost_df = rag_query_cost_calculator(run_df)
+        rag_cost_df = rag_query_cost_calculator(run_df)
 
         # Evaluate, Score and save results
-        score_and_save(cost_df, current_run_dir, mode)
+        rag_eval_cost = score_and_save(rag_cost_df, current_run_dir, mode)
 
     else:
-        for _, row in gold.iterrows():
+        for _, row in gold[:1].iterrows():
 
             # if _ >= 5:  # Process only first 5 questions
             #     break
@@ -120,9 +120,9 @@ for mode in modes:
                     "generated_answer": answer,
                     "total_latency_ms": f"{total_latency:.2f}",
                     # GraphRAG currently doesn't expose token usage
-                    "prompt_tokens": None,
-                    "completion_tokens": None,
-                    "total_tokens": None,
+                    "prompt_tokens": 0,
+                    "completion_tokens": 0,
+                    "total_tokens": 0,
                 }
             )
             # print(f"Time -> {total_latency/1000:.2f} s\n")
@@ -131,7 +131,7 @@ for mode in modes:
         run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
         # Evaluate, Score and save results
-        score_and_save(run_df, current_run_dir, mode)
+        graphrag_eval_cost = score_and_save(run_df, current_run_dir, mode)
 
 # Save yaml configuration for this run
 configuration = {
@@ -143,10 +143,10 @@ configuration = {
     "LLM model (GraphRAG & RAG)": EVALUATION_LLM_MODEL,
     "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
     "Costing": {
-        "RAG": cost_df["cost"].sum(),
-        "RAG_Evaluation": "To be calculated",
+        "RAG": rag_cost_df["cost"].sum(),
+        "RAG_Evaluation": f"${rag_eval_cost:.4f}",
         "GraphRAG": "To be calculated",
-        "GraphRAG_Evaluation": "To be calculated",
+        "GraphRAG_Evaluation": f"${graphrag_eval_cost:.4f}",
     },
 }
 with open(current_run_dir / "config.yaml", "w") as f:

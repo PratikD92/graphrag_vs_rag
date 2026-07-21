@@ -1,5 +1,12 @@
 import pandas as pd
 from datasets import Dataset
+
+import warnings
+
+warnings.filterwarnings("ignore", category=ResourceWarning, module="ragas")
+
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="ragas")
+
 from ragas import evaluate
 from ragas.llms import llm_factory
 from ragas.embeddings.base import embedding_factory
@@ -21,8 +28,12 @@ from .config import EVALUATION_EMBEDDING_MODEL, EVALUATION_LLM_MODEL, EVALUATION
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.callbacks import get_openai_callback
 
-# from ragas.llms import LangchainLLMWrapper
-# from ragas.embeddings import LangchainEmbeddingsWrapper
+from ragas.llms import LangchainLLMWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
+
+
+# Variables
+eval_cost = 0.0
 
 
 def get_run_dir(current_dir):
@@ -97,17 +108,33 @@ def create_dataset(df):
 def score_and_save(df, current_run_dir, mode):
     # df = pd.read_csv(current_run_dir / f"{mode}_run_results.csv")
     dataset = create_dataset(df)
+    required_cols = [
+        "retrieval_latency_ms",
+        "llm_latency_ms",
+        "total_latency_ms",
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens",
+        "cost",
+    ]
 
-    # evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model=EVALUATION_LLM_MODEL))
-    # evaluator_embeddings = LangchainEmbeddingsWrapper(
-    #     OpenAIEmbeddings(model=EVALUATION_EMBEDDING_MODEL)
-    # )
+    # Add missing columns with value 0
+    for col in required_cols:
+        if col not in df.columns:
+            df[col] = 0
 
-    client = AsyncOpenAI(api_key=EVALUATION_API_KEY)
-    evaluator_llm = llm_factory(EVALUATION_LLM_MODEL, client=client)
-    evaluator_embeddings = embedding_factory(
-        provider="openai", model=EVALUATION_EMBEDDING_MODEL, client=client
+    metadata = df[required_cols].reset_index(drop=True)
+
+    evaluator_llm = LangchainLLMWrapper(ChatOpenAI(model=EVALUATION_LLM_MODEL))
+    evaluator_embeddings = LangchainEmbeddingsWrapper(
+        OpenAIEmbeddings(model=EVALUATION_EMBEDDING_MODEL)
     )
+
+    # client = AsyncOpenAI(api_key=EVALUATION_API_KEY)
+    # evaluator_llm = llm_factory(EVALUATION_LLM_MODEL, client=client)
+    # evaluator_embeddings = embedding_factory(
+    #     provider="openai", model=EVALUATION_EMBEDDING_MODEL, client=client
+    # )
 
     with get_openai_callback() as cb:
         results = evaluate(
@@ -122,11 +149,14 @@ def score_and_save(df, current_run_dir, mode):
             llm=evaluator_llm,
             embeddings=evaluator_embeddings,
         )
-    print(f"{mode} eval cost: ${cb.total_cost:.4f}")
-
-    results.to_pandas().to_csv(current_run_dir / f"{mode}_scores.csv", index=False)
+    eval_cost = cb.total_cost
+    scores = results.to_pandas().reset_index(drop=True)
+    final_df = pd.concat([scores, metadata], axis=1)
+    final_df.to_csv(current_run_dir / f"{mode}_scores.csv", index=False)
 
     print(f"{mode} scores saved to {current_run_dir / f'{mode}_scores.csv'}")
+
+    return eval_cost
 
 
 def score_and_save_without_cost(df, current_run_dir, mode):
