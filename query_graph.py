@@ -20,9 +20,6 @@ COMMUNITY_LEVEL = 2
 RESPONSE_TYPE = "Multiple Paragraphs"
 
 graphrag_config = load_config(Path(PROJECT_DIRECTORY))
-print("+" * 50)
-print(graphrag_config)
-print("+" * 50)
 
 entities = pd.read_parquet(f"{PROJECT_DIRECTORY}/output/entities.parquet")
 communities = pd.read_parquet(f"{PROJECT_DIRECTORY}/output/communities.parquet")
@@ -64,12 +61,12 @@ def _get_costs(provider: str, model: str) -> tuple[str, dict[str, float] | None]
     provider_model_id = f"{provider}/{model}"
     costs = model_cost_registry.get_model_costs(provider_model_id)
     if costs:
-        print(f"Costs provider_model {provider_model_id}: {costs}")
+        # print(f"Costs provider_model {provider_model_id}: {costs}")
         return provider_model_id, costs
 
     costs = model_cost_registry.get_model_costs(model)
     if costs:
-        print(f"Costs for only model {model}: {costs}")
+        # print(f"Costs for only model {model}: {costs}")
         return model, costs
 
     return provider_model_id, None

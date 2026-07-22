@@ -18,7 +18,7 @@ import yaml
 from datetime import datetime
 
 from RAG_pipeline.query_RAG import generate_rag_answer
-from query_graph import generate, generate_with_cost
+from query_graph import generate
 from .utils import (
     save_intermediate_run_results,
     score_and_save,
@@ -26,12 +26,7 @@ from .utils import (
     get_run_dir,
     rag_query_cost_calculator,
 )
-from .config import (
-    EVALUATION_LLM_MODEL,
-    EVALUATION_EMBEDDING_MODEL,
-    CHUNK_SIZE,
-    CHUNK_OVERLAP,
-)
+from .config import EVALUATION_LLM_MODEL, EVALUATION_EMBEDDING_MODEL
 
 current_dir = Path(__file__).parent
 # parent_dir = Path(__file__).parent.parent
@@ -42,8 +37,8 @@ current_dir = Path(__file__).parent
 current_run_dir = get_run_dir(current_dir)
 golden_csv = "golden_dataset.csv"
 
-modes = ["rag", "graphrag"]
-# modes = ["graphrag"]
+# modes = ["rag", "graphrag"]
+modes = ["graphrag"]
 
 # Load golden dataset
 gold = pd.read_csv(current_dir / golden_csv)
@@ -54,15 +49,11 @@ async def generate_async(query: str):
     return await generate(query=query)
 
 
-async def generate_with_cost_async(query: str):
-    return await generate_with_cost(query=query)
-
-
 for mode in modes:
     rows = []
     print(f"Evaluating for: {mode}")
     if mode == "rag":
-        for _, row in gold[:2].iterrows():
+        for _, row in gold[:1].iterrows():
             # print(f"Processing query {_+1}/{questions}")
             print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
 
@@ -117,9 +108,8 @@ for mode in modes:
             # print(f"Processing query {_+1}/{questions}")
             print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
             question = row["question"]
-            answer, context, total_latency, query_cost = asyncio.run(
-                generate_with_cost_async(query=question)
-            )
+            # answer, context, total_latency = asyncio.run(generate(query=question))
+            answer, context, total_latency = asyncio.run(generate_async(query=question))
 
             rows.append(
                 {
@@ -129,20 +119,20 @@ for mode in modes:
                     "retrieved_context": stringify_graphrag_context(context),
                     "generated_answer": answer,
                     "total_latency_ms": f"{total_latency:.2f}",
-                    "prompt_tokens": query_cost["prompt_tokens"],
-                    "completion_tokens": query_cost["completion_tokens"],
-                    "total_tokens": query_cost["total_tokens"],
-                    "cost": query_cost["total_cost"],
+                    # GraphRAG currently doesn't expose token usage
+                    "prompt_tokens": 0,
+                    "completion_tokens": 0,
+                    "total_tokens": 0,
+                    "cost": query_cost,
                 }
             )
             # print(f"Time -> {total_latency/1000:.2f} s\n")
 
         # Save intermediate run results
-        graphrag_run_df = save_intermediate_run_results(current_run_dir, mode, rows)
+        run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
         # Evaluate, Score and save results
-        graphrag_eval_cost = score_and_save(graphrag_run_df, current_run_dir, mode)
-
+        graphrag_eval_cost = score_and_save(run_df, current_run_dir, mode)
 
 # Save yaml configuration for this run
 configuration = {
@@ -154,13 +144,11 @@ configuration = {
     "LLM model (GraphRAG & RAG)": EVALUATION_LLM_MODEL,
     "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
     "Costing": {
-        "RAG": f"${float(rag_cost_df['cost'].sum()):.4f}",
-        "RAG_Evaluation": f"${rag_eval_cost:.4f}",
-        "GraphRAG": f"${float(graphrag_run_df['cost'].sum()):.4f}",
+        # "RAG": rag_cost_df["cost"].sum(),
+        # "RAG_Evaluation": f"${rag_eval_cost:.4f}",
+        "GraphRAG": "To be calculated",
         "GraphRAG_Evaluation": f"${graphrag_eval_cost:.4f}",
     },
-    "Chunk Size": CHUNK_SIZE,
-    "Chunk Overlap": CHUNK_OVERLAP,
 }
 with open(current_run_dir / "config.yaml", "w") as f:
     yaml.dump(configuration, f)

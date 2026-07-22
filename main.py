@@ -9,7 +9,7 @@ from RAG_pipeline.query_RAG import generate_rag_answer
 from generate_visual_graph import generate_graph
 from graphrag_source_docs import get_graphrag_source_docs
 
-st.title("GraphRAG POC")
+st.title("GraphRAG vs RAG")
 st.set_page_config(page_title="GraphRAG POC", layout="wide")
 
 

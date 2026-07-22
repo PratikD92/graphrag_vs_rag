@@ -2,6 +2,7 @@ import pandas as pd
 from datasets import Dataset
 
 import warnings
+from pathlib import Path
 
 warnings.filterwarnings("ignore", category=ResourceWarning, module="ragas")
 
@@ -34,6 +35,25 @@ from ragas.embeddings import LangchainEmbeddingsWrapper
 
 # Variables
 eval_cost = 0.0
+
+
+def get_latest_run_dir():
+    current_dir = Path(__file__).parent
+    runs_dir = current_dir / "runs"
+    if not runs_dir.exists():
+        runs_dir.mkdir()
+
+    # Find existing run_# directories and get the highest number
+    existing_run_numbers = []
+    for d in runs_dir.iterdir():
+        if d.is_dir() and d.name.startswith("run_"):
+            suffix = d.name[len("run_") :]
+            if suffix.isdigit():
+                existing_run_numbers.append(int(suffix))
+
+    last_run = max(existing_run_numbers, default=0)
+    last_run_dir = runs_dir / f"run_{last_run}"
+    return last_run_dir
 
 
 def get_run_dir(current_dir):
@@ -193,7 +213,7 @@ def rag_query_cost_calculator(run_df):
             completion_tokens=completion_tokens,
         )
         total_cost = prompt_cost + completion_cost_
-        run_df.at[row.name, "cost"] = f"${round(total_cost, 4)}"
+        run_df.at[row.name, "cost"] = round(total_cost, 4)
     # df.to_csv("runs/run_1/rag_costs.csv", index=False)
     # return total_cost
     return run_df
@@ -213,7 +233,7 @@ def rag_per_query_cost_calculator(run_df):
             completion_tokens=completion_tokens,
         )
         total_cost = prompt_cost + completion_cost_
-        run_df.at[row.name, "cost"] = f"${round(total_cost, 4)}"
+        run_df.at[row.name, "cost"] = round(total_cost, 4)
     # df.to_csv("runs/run_1/rag_costs.csv", index=False)
     # return total_cost
     return run_df
