@@ -6,11 +6,16 @@ import time
 
 from query_graph import generate
 from RAG_pipeline.query_RAG import generate_rag_answer
-from generate_visual_graph import generate_graph
+from generate_visual_graph import generate_graph, generate_full_graph
 from graphrag_source_docs import get_graphrag_source_docs
 
-st.title("GraphRAG vs RAG")
-st.set_page_config(page_title="GraphRAG POC", layout="wide")
+# st.title("GraphRAG vs RAG")
+st.title("Intelligent Insurance Policy Assistant")
+st.write(
+    "Benchmark GraphRAG and traditional RAG on insurance policy documents using retrieval quality, response quality, latency, token usage, and cost"
+)
+st.divider()
+st.set_page_config(page_title="GraphRAG vs RAG", layout="wide")
 
 
 # SESSION STATE VARIABLES INITIALIZATION
@@ -71,13 +76,20 @@ def show_all_documents():
     st.json(st.session_state.documents)
 
 
-# Graph visualization
+# Retrieved Graph visualization
 @st.dialog("GraphRAG Graph", width="large")
 def show_graph_visuals():
     if st.session_state.graphrag_context is None:
         st.write("No context available")
         return
     html = generate_graph(st.session_state.graphrag_context)
+    st.components.v1.html(html, height=600)
+
+
+# Full Graph visualization
+@st.dialog("Full GraphRAG Graph", width="large")
+def show_full_graph_visuals():
+    html = generate_full_graph()
     st.components.v1.html(html, height=600)
 
 
@@ -114,9 +126,12 @@ with acols[0]:
     if st.button("Submit", key="graphrag_submit", type="primary"):
         # reset_session()
         st.session_state.graphrag_loading = True
-with acols[-1]:
+with acols[-2]:
     if st.button("View Documents Indexed", key="view_documents"):
         show_all_documents()
+with acols[-1]:
+    if st.button("View Full Graph", key="view_full_graph"):
+        show_full_graph_visuals()
 
 st.markdown("---")
 
@@ -136,25 +151,26 @@ columns = st.columns(2, border=True)
 
 with columns[0]:
 
-    gcols = st.columns([4, 1, 1, 1])
+    gcols = st.columns([4, 1])
 
+    # with gcols[0]:
+    #     gcols0_cols = st.columns([1.5, 1, 0.5])
     with gcols[0]:
-        gcols0_cols = st.columns([1.5, 1, 0.5])
-        with gcols0_cols[0]:
-            st.subheader("GraphRAG")
-        with gcols0_cols[1]:
-            if st.session_state.graphrag_time_elapsed:
-                st.info(f":clock3: {round(st.session_state.graphrag_time_elapsed, 2)}s")
-
+        st.subheader("GraphRAG")
     with gcols[1]:
+        if st.session_state.graphrag_time_elapsed:
+            st.info(f":clock3: {round(st.session_state.graphrag_time_elapsed, 2)}s")
+
+    gcols = st.columns([1, 1, 1, 1.2])
+    with gcols[0]:
         if st.button("Source", key="graphrag_source_documents"):
             show_graphrag_source_documents()
 
-    with gcols[-2]:
+    with gcols[1]:
         if st.button("Graph", key="view_graphrag_graph", type="secondary"):
             show_graph_visuals()
 
-    with gcols[-1]:
+    with gcols[2]:
         if st.button("Expand", key="graph_dialog"):
             show_graphrag_dialog()
 
@@ -182,21 +198,20 @@ with columns[0]:
 # TRADITIONAL RAG SECTION
 ##########################################
 with columns[1]:
-    rcols = st.columns([4, 1, 1, 1])
+    rcols = st.columns([4, 1])
 
     with rcols[0]:
-        rcols0_cols = st.columns([2.5, 1.5])
-        with rcols0_cols[0]:
-            st.subheader("Traditional RAG")
-        with rcols0_cols[1]:
-            if st.session_state.rag_time_elapsed:
-                st.info(f":clock3: {round(st.session_state.rag_time_elapsed, 2)}s")
+        st.subheader("Traditional RAG")
+    with rcols[1]:
+        if st.session_state.rag_time_elapsed:
+            st.info(f":clock3: {round(st.session_state.rag_time_elapsed, 2)}s")
 
-    with rcols[-2]:
+    rcols = st.columns([1, 1, 2.5])
+    with rcols[0]:
         if st.button("Source", key="rag_source_documents"):
             show_rag_source_documents()
 
-    with rcols[-1]:
+    with rcols[1]:
         if st.button("Expand", key="rag_dialog"):
             show_rag_dialog()
 

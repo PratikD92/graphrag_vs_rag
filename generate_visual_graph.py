@@ -1,5 +1,6 @@
 from pyvis.network import Network
 import pandas as pd
+import streamlit as st
 
 PROJECT_DIRECTORY = "."
 entities = pd.read_parquet(f"{PROJECT_DIRECTORY}/output/entities.parquet")
@@ -122,22 +123,68 @@ def generate_graph(context):
     return net.generate_html()
 
 
-# --------------------------
-# Physics
-# --------------------------
+@st.cache_resource()
+def generate_full_graph():
 
-# net.force_atlas_2based()
+    # --------------------------
+    # Entity descriptions
+    # --------------------------
 
-# # Optional:
-# # net.show_buttons(filter_=["physics"])
+    entity_desc = {}
 
-# # --------------------------
-# # Save
-# # --------------------------
+    for _, row in entities.iterrows():
 
-# net.write_html(
-#     "graphrag_retrieval_path.html",
-#     open_browser=False
-# )
+        entity_name = str(row.get("title", row.get("entity", "")))
 
-# print("Saved: graphrag_retrieval_path.html")
+        entity_desc[entity_name] = str(row.get("description", ""))
+
+    # --------------------------
+    # Create graph
+    # --------------------------
+
+    net = Network(
+        height="900px",
+        width="100%",
+        directed=True,
+        bgcolor="#ffffff",
+        font_color="black",
+    )
+
+    # --------------------------
+    # Collect all nodes
+    # --------------------------
+
+    all_nodes = set()
+
+    for _, row in relationships.iterrows():
+
+        source = str(row["source"])
+        target = str(row["target"])
+
+        all_nodes.add(source)
+        all_nodes.add(target)
+
+    for node in all_nodes:
+
+        net.add_node(
+            node,
+            label=node,
+            title=entity_desc.get(node, ""),
+            color="#d3d3d3",
+            size=20,
+        )
+
+    for _, row in relationships.iterrows():
+
+        source = str(row["source"])
+        target = str(row["target"])
+
+        net.add_edge(
+            source,
+            target,
+            color="#dddddd",
+            width=1,
+            title=str(row.get("description", "")),
+        )
+
+    return net.generate_html()
