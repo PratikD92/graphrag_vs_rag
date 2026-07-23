@@ -148,7 +148,7 @@ def _get_local_search_engine():
     )
 
 
-async def generate_with_cost(query: str):
+async def generate_with_cost_OG(query: str):
     """Run local search and return GraphRAG token/cost metadata.
 
     GraphRAG's public api.local_search streams the final chat completion and
@@ -156,6 +156,7 @@ async def generate_with_cost(query: str):
     calls LocalSearch.search(), which exposes token counts. Completion cost is
     then calculated with GraphRAG/LiteLLM's model_cost_registry.
     """
+
     start = time.perf_counter()
     search_engine = _get_local_search_engine()
     _clear_metrics_store(search_engine.model)
@@ -203,6 +204,78 @@ async def generate_with_cost(query: str):
     }
 
     return search_result.response, search_result.context_data, total_latency, cost
+
+
+async def generate_with_cost(query: str, model: str | None = None):
+    """Run local search and return GraphRAG token/cost metadata.
+
+    GraphRAG's public api.local_search streams the final chat completion and
+    returns only response/context. This mirrors the same local-search setup but
+    calls LocalSearch.search(), which exposes token counts. Completion cost is
+    then calculated with GraphRAG/LiteLLM's model_cost_registry.
+    """
+    completion_config = graphrag_config.get_completion_model_config(
+        graphrag_config.local_search.completion_model_id
+    )
+    original_model = completion_config.model
+    if model:
+        completion_config.model = model
+
+    try:
+        start = time.perf_counter()
+        search_engine = _get_local_search_engine()
+        _clear_metrics_store(search_engine.model)
+        _clear_metrics_store(search_engine.context_builder.text_embedder)
+
+        search_result = await search_engine.search(query=query)
+        total_latency = (time.perf_counter() - start) * 1000
+
+        prompt_tokens = search_result.prompt_tokens + len(
+            search_engine.tokenizer.encode(query)
+        )
+        output_tokens = search_result.output_tokens
+        completion_cost, completion_warning = _completion_cost(
+            prompt_tokens, output_tokens
+        )
+
+        embedding_metrics = (
+            search_engine.context_builder.text_embedder.metrics_store.get_metrics()
+        )
+        embedding_cost, embedding_tokens, embedding_warning = (
+            _embedding_cost_from_metrics(
+                embedding_metrics,
+                query,
+                search_engine.context_builder.text_embedder.tokenizer,
+            )
+        )
+
+        cost = {
+            "total_cost": completion_cost + embedding_cost,
+            "completion_cost": completion_cost,
+            "embedding_cost": embedding_cost,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": output_tokens,
+            "embedding_tokens": embedding_tokens,
+            "total_tokens": prompt_tokens + output_tokens + embedding_tokens,
+            "llm_calls": search_result.llm_calls,
+            "completion_model": _model_costs(
+                graphrag_config.local_search.completion_model_id
+            )[0],
+            "embedding_model": _embedding_model_costs(
+                graphrag_config.local_search.embedding_model_id
+            )[0],
+            "embedding_metrics": embedding_metrics,
+            "warnings": [
+                warning
+                for warning in (completion_warning, embedding_warning)
+                if warning is not None
+            ],
+        }
+
+        return search_result.response, search_result.context_data, total_latency, cost
+
+    finally:
+        completion_config.model = original_model
 
 
 # async def main():

@@ -6,6 +6,7 @@ import pandas as pd
 st.header("Evaluation", divider="rainbow")
 
 from evaluation.utils import get_latest_run_dir, list_run_dirs
+from evaluation.run_ragas_eval import evaluate_ragas
 import yaml
 
 available_runs = list_run_dirs()
@@ -118,13 +119,13 @@ with st.form("run_evaluation"):
         )
 
     with col2:
-        llm_model = st.selectbox(
+        generation_llm_model = st.selectbox(
             "Generation LLM Model",
             [
                 # OpenAI
-                "openai/gpt-4o-mini",
-                "openai/gpt-5-nano",
-                "openai/gpt-5.4-nano",
+                "gpt-4o-mini",
+                "gpt-4.1-nano",
+                "gpt-5.4-nano",
             ],
         )
 
@@ -135,6 +136,14 @@ with st.form("run_evaluation"):
             value=200,
             step=50,
             disabled=True,
+        )
+
+        sample_size = st.number_input(
+            "Sample Size",
+            min_value=1,
+            max_value=35,
+            value=35,
+            step=1,
         )
 
     st.markdown("### Evaluation Metrics")
@@ -157,4 +166,9 @@ with st.form("run_evaluation"):
     )
 
 if submitted:
-    st.success("Evaluation started!")
+    try:
+        evaluate_ragas(llm_model=generation_llm_model, sample_size=sample_size)
+        st.success("Evaluation Successful!")
+        st.rerun()
+    except Exception as e:
+        st.error(f"Evaluation failed! {e}")

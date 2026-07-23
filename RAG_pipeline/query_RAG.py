@@ -54,7 +54,7 @@ def retrieve_chunks(query_text: str):
 #     Which policy documents are relevant and why?"""
 
 
-def generate_rag_answer(query):
+def generate_rag_answer(query, llm_model):
 
     total_start = time.perf_counter()
 
@@ -73,8 +73,11 @@ def generate_rag_answer(query):
 
     llm_start = time.perf_counter()
 
+    model = RAG_LLM_MODEL  # fall back to .env default if not overridden
+    if llm_model != RAG_LLM_MODEL or llm_model is not None:
+        model = llm_model
     response = openai_client.chat.completions.create(
-        model=RAG_LLM_MODEL,
+        model=model,
         messages=[{"role": "user", "content": prompt}],
         temperature=0,
     )
@@ -99,4 +102,5 @@ def generate_rag_answer(query):
         total_tokens,
         prompt_tokens,
         completion_tokens,
+        model,
     )

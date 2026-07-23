@@ -42,7 +42,6 @@ current_dir = Path(__file__).parent
 current_run_dir = get_run_dir(current_dir)
 golden_csv = "golden_dataset.csv"
 
-modes = ["rag", "graphrag"]
 # modes = ["graphrag"]
 
 # Load golden dataset
@@ -54,113 +53,130 @@ async def generate_async(query: str):
     return await generate(query=query)
 
 
-async def generate_with_cost_async(query: str):
-    return await generate_with_cost(query=query)
+async def generate_with_cost_async(query: str, model: str | None = None):
+    # return await generate_with_cost(query=query)
+    return await generate_with_cost(query=query, model=model)
 
 
-for mode in modes:
-    rows = []
-    print(f"Evaluating for: {mode}")
-    if mode == "rag":
-        for _, row in gold[:2].iterrows():
-            # print(f"Processing query {_+1}/{questions}")
-            print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
+def evaluate_ragas(llm_model: str | None = None, sample_size: int = 35):
 
-            question = row["question"]
-            expected_answer = row["expected_answer"]
+    streamlit_model = None
+    if llm_model:
+        streamlit_model = llm_model
 
-            # Generate RAG answer
-            (
-                rag_answer,
-                source_docs,
-                context,
-                retrieval_latency,
-                llm_latency,
-                total_latency,
-                total_tokens,
-                prompt_tokens,
-                completion_tokens,
-            ) = generate_rag_answer(question)
+    modes = ["rag", "graphrag"]
 
-            # Store results
-            rows.append(
-                {
-                    "question": row["question"],
-                    "expected_answer": row["expected_answer"],
-                    "source": row["source"],
-                    "retrieved_context": context,
-                    "generated_answer": rag_answer,
-                    "retrieval_latency_ms": retrieval_latency,
-                    "llm_latency_ms": llm_latency,
-                    "total_latency_ms": total_latency,
-                    "prompt_tokens": prompt_tokens,
-                    "completion_tokens": completion_tokens,
-                    "total_tokens": total_tokens,
-                }
-            )
-            # print(f"Time -> {total_latency/1000:.2f} s\n")
+    for mode in modes:
+        rows = []
+        print(f"Evaluating for: {mode}")
+        if mode == "rag":
+            for _, row in gold[:sample_size].iterrows():
+                # print(f"Processing query {_+1}/{questions}")
+                print(
+                    f"Processing query {_+1}/{questions}".ljust(50),
+                    end="\r",
+                    flush=True,
+                )
 
-        # Save intermediate run results
-        run_df = save_intermediate_run_results(current_run_dir, mode, rows)
+                question = row["question"]
+                expected_answer = row["expected_answer"]
 
-        # Calculate costs
-        rag_cost_df = rag_query_cost_calculator(run_df)
+                # Generate RAG answer
+                (
+                    rag_answer,
+                    source_docs,
+                    context,
+                    retrieval_latency,
+                    llm_latency,
+                    total_latency,
+                    total_tokens,
+                    prompt_tokens,
+                    completion_tokens,
+                    rag_model_used,
+                ) = generate_rag_answer(question, llm_model=streamlit_model)
 
-        # Evaluate, Score and save results
-        rag_eval_cost = score_and_save(rag_cost_df, current_run_dir, mode)
+                # Store results
+                rows.append(
+                    {
+                        "question": row["question"],
+                        "expected_answer": row["expected_answer"],
+                        "source": row["source"],
+                        "retrieved_context": context,
+                        "generated_answer": rag_answer,
+                        "retrieval_latency_ms": retrieval_latency,
+                        "llm_latency_ms": llm_latency,
+                        "total_latency_ms": total_latency,
+                        "prompt_tokens": prompt_tokens,
+                        "completion_tokens": completion_tokens,
+                        "total_tokens": total_tokens,
+                    }
+                )
+                # print(f"Time -> {total_latency/1000:.2f} s\n")
 
-    else:
-        for _, row in gold[:2].iterrows():
+            # Save intermediate run results
+            run_df = save_intermediate_run_results(current_run_dir, mode, rows)
 
-            # if _ >= 5:  # Process only first 5 questions
-            #     break
-            # print(f"Processing query {_+1}/{questions}")
-            print(f"Processing query {_+1}/{questions}".ljust(50), end="\r", flush=True)
-            question = row["question"]
-            answer, context, total_latency, query_cost = asyncio.run(
-                generate_with_cost_async(query=question)
-            )
+            # Calculate costs
+            rag_cost_df = rag_query_cost_calculator(run_df)
 
-            rows.append(
-                {
-                    "question": question,
-                    "expected_answer": row["expected_answer"],
-                    "source": row["source"],
-                    "retrieved_context": stringify_graphrag_context(context),
-                    "generated_answer": answer,
-                    "total_latency_ms": f"{total_latency:.2f}",
-                    "prompt_tokens": query_cost["prompt_tokens"],
-                    "completion_tokens": query_cost["completion_tokens"],
-                    "total_tokens": query_cost["total_tokens"],
-                    "cost": query_cost["total_cost"],
-                }
-            )
-            # print(f"Time -> {total_latency/1000:.2f} s\n")
+            # Evaluate, Score and save results
+            rag_eval_cost = score_and_save(rag_cost_df, current_run_dir, mode)
 
-        # Save intermediate run results
-        graphrag_run_df = save_intermediate_run_results(current_run_dir, mode, rows)
+        else:
+            for _, row in gold[:sample_size].iterrows():
 
-        # Evaluate, Score and save results
-        graphrag_eval_cost = score_and_save(graphrag_run_df, current_run_dir, mode)
+                # if _ >= 5:  # Process only first 5 questions
+                #     break
+                # print(f"Processing query {_+1}/{questions}")
+                print(
+                    f"Processing query {_+1}/{questions}".ljust(50),
+                    end="\r",
+                    flush=True,
+                )
+                question = row["question"]
+                answer, context, total_latency, query_cost = asyncio.run(
+                    generate_with_cost_async(query=question, model=streamlit_model)
+                )
 
+                rows.append(
+                    {
+                        "question": question,
+                        "expected_answer": row["expected_answer"],
+                        "source": row["source"],
+                        "retrieved_context": stringify_graphrag_context(context),
+                        "generated_answer": answer,
+                        "total_latency_ms": f"{total_latency:.2f}",
+                        "prompt_tokens": query_cost["prompt_tokens"],
+                        "completion_tokens": query_cost["completion_tokens"],
+                        "total_tokens": query_cost["total_tokens"],
+                        "cost": query_cost["total_cost"],
+                    }
+                )
+                # print(f"Time -> {total_latency/1000:.2f} s\n")
 
-# Save yaml configuration for this run
-configuration = {
-    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-    "golden_csv": golden_csv,
-    "questions": questions,
-    "evaluation_llm_model": EVALUATION_LLM_MODEL,
-    "evaluation_embedding_model": EVALUATION_EMBEDDING_MODEL,
-    "LLM model (GraphRAG & RAG)": EVALUATION_LLM_MODEL,
-    "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
-    "Costing": {
-        "RAG": f"${float(rag_cost_df['cost'].sum()):.4f}",
-        "RAG_Evaluation": f"${rag_eval_cost:.4f}",
-        "GraphRAG": f"${float(graphrag_run_df['cost'].sum()):.4f}",
-        "GraphRAG_Evaluation": f"${graphrag_eval_cost:.4f}",
-    },
-    "Chunk Size": CHUNK_SIZE,
-    "Chunk Overlap": CHUNK_OVERLAP,
-}
-with open(current_run_dir / "config.yaml", "w") as f:
-    yaml.dump(configuration, f)
+            # Save intermediate run results
+            graphrag_run_df = save_intermediate_run_results(current_run_dir, mode, rows)
+
+            # Evaluate, Score and save results
+            graphrag_eval_cost = score_and_save(graphrag_run_df, current_run_dir, mode)
+
+    # Save yaml configuration for this run
+    configuration = {
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "golden_csv": golden_csv,
+        "questions": questions,
+        "evaluation_llm_model": EVALUATION_LLM_MODEL,
+        "evaluation_embedding_model": EVALUATION_EMBEDDING_MODEL,
+        "LLM model (GraphRAG & RAG)": rag_model_used,
+        "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
+        "Costing": {
+            "RAG": f"${float(rag_cost_df['cost'].sum()):.4f}",
+            "RAG_Evaluation": f"${rag_eval_cost:.4f}",
+            "GraphRAG": f"${float(graphrag_run_df['cost'].sum()):.4f}",
+            "GraphRAG_Evaluation": f"${graphrag_eval_cost:.4f}",
+        },
+        "Chunk Size": CHUNK_SIZE,
+        "Chunk Overlap": CHUNK_OVERLAP,
+    }
+    with open(current_run_dir / "config.yaml", "w") as f:
+        yaml.dump(configuration, f)
