@@ -5,37 +5,24 @@ import pandas as pd
 
 st.header("Evaluation", divider="rainbow")
 
-from evaluation.utils import get_latest_run_dir
+from evaluation.utils import get_latest_run_dir, list_run_dirs
 import yaml
 
-current_run_dir = get_latest_run_dir()
+available_runs = list_run_dirs()
+
+if not available_runs:
+    st.warning("No completed evaluation runs found yet. Run an evaluation first.")
+    st.stop()
+
+run_labels = [d.name for d in available_runs]
+selected_label = st.selectbox("Select run", run_labels, index=0)
+current_run_dir = available_runs[run_labels.index(selected_label)]
 
 # Read config.yaml
 config_path = current_run_dir / "config.yaml"
 with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
-# rows = []
-# for key, value in config.items():
-#     if key == "timestamp":
-#         continue
-#     if isinstance(value, dict):
-#         for subkey, subvalue in value.items():
-#             rows.append(
-#                 {
-#                     "Parameter": f"{key} → {subkey}",
-#                     "Value": str(subvalue),
-#                 }
-#             )
-#     else:
-#         rows.append(
-#             {
-#                 "Parameter": key,
-#                 "Value": str(value),
-#             }
-#         )
-
-# config_df = pd.DataFrame(rows)
 
 parameters, values = [], []
 for key, value in config.items():

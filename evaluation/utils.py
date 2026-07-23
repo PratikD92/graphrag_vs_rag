@@ -37,6 +37,21 @@ from ragas.embeddings import LangchainEmbeddingsWrapper
 eval_cost = 0.0
 
 
+def list_run_dirs() -> list[Path]:
+    current_dir = Path(__file__).parent
+    run_dirs = current_dir / "runs"
+    runs_dir = []
+    # run_dirs = []
+    for d in run_dirs.iterdir():
+        if d.is_dir() and d.name.startswith("run_"):
+            suffix = d.name[len("run_") :]
+            if suffix.isdigit() and (d / "config.yaml").exists():
+                runs_dir.append((int(suffix), d))
+
+    runs_dir.sort(key=lambda x: x[0], reverse=True)
+    return [d for _, d in runs_dir]
+
+
 def get_latest_run_dir():
     current_dir = Path(__file__).parent
     runs_dir = current_dir / "runs"
