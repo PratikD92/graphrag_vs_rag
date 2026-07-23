@@ -113,19 +113,16 @@ with st.form("run_evaluation"):
             [
                 # OpenAI
                 "openai/text-embedding-3-small",
-                "openai/text-embedding-3-large",
-                # Google
-                "google/text-embedding-004",
-                "google/gemini-embedding-001",
             ],
         )
 
         chunk_size = st.number_input(
             "Chunk Size",
             min_value=100,
-            max_value=5000,
-            value=500,
+            max_value=3000,
+            value=1200,
             step=100,
+            disabled=True,
         )
 
         prompt_version = st.selectbox(
@@ -135,20 +132,12 @@ with st.form("run_evaluation"):
 
     with col2:
         llm_model = st.selectbox(
-            "LLM Model",
+            "Generation LLM Model",
             [
                 # OpenAI
                 "openai/gpt-4o-mini",
-                "openai/gpt-5.5",
-                # Anthropic
-                "anthropic/claude-opus-4",
-                "anthropic/claude-sonnet-4",
-                # Google
-                "google/gemini-2.5-pro",
-                "google/gemini-2.5-flash",
-                # Meta
-                "meta-llama/llama-3.3-70b-instruct",
-                "meta-llama/llama-3.1-8b-instruct",
+                "openai/gpt-5-nano",
+                "openai/gpt-5.4-nano",
             ],
         )
 
@@ -156,8 +145,9 @@ with st.form("run_evaluation"):
             "Chunk Overlap",
             min_value=0,
             max_value=1000,
-            value=100,
+            value=200,
             step=50,
+            disabled=True,
         )
 
     st.markdown("### Evaluation Metrics")
