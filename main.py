@@ -1,4 +1,6 @@
 import streamlit as st
+
+st.set_page_config(page_title="GraphRAG vs RAG", layout="wide")
 import asyncio
 import os
 import pandas as pd
@@ -9,13 +11,11 @@ from RAG_pipeline.query_RAG import generate_rag_answer
 from generate_visual_graph import generate_graph, generate_full_graph
 from graphrag_source_docs import get_graphrag_source_docs
 
-# st.title("GraphRAG vs RAG")
 st.title("Intelligent Insurance Policy Assistant")
 st.write(
     "Benchmark GraphRAG and traditional RAG on insurance policy documents using retrieval quality, response quality, latency, token usage, and cost"
 )
 st.divider()
-st.set_page_config(page_title="GraphRAG vs RAG", layout="wide")
 
 
 # SESSION STATE VARIABLES INITIALIZATION

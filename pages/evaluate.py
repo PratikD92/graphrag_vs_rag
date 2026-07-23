@@ -1,11 +1,12 @@
 import streamlit as st
 
-st.header("Evaluation", divider="rainbow")
 st.set_page_config(page_title="GraphRAG vs RAG | Eval", layout="wide")
+import pandas as pd
+
+st.header("Evaluation", divider="rainbow")
 
 from evaluation.utils import get_latest_run_dir
 import yaml
-import pandas as pd
 
 current_run_dir = get_latest_run_dir()
 
@@ -14,27 +15,42 @@ config_path = current_run_dir / "config.yaml"
 with open(config_path, "r") as f:
     config = yaml.safe_load(f)
 
-rows = []
+# rows = []
+# for key, value in config.items():
+#     if key == "timestamp":
+#         continue
+#     if isinstance(value, dict):
+#         for subkey, subvalue in value.items():
+#             rows.append(
+#                 {
+#                     "Parameter": f"{key} → {subkey}",
+#                     "Value": str(subvalue),
+#                 }
+#             )
+#     else:
+#         rows.append(
+#             {
+#                 "Parameter": key,
+#                 "Value": str(value),
+#             }
+#         )
+
+# config_df = pd.DataFrame(rows)
+
+parameters, values = [], []
 for key, value in config.items():
     if key == "timestamp":
         continue
     if isinstance(value, dict):
         for subkey, subvalue in value.items():
-            rows.append(
-                {
-                    "Parameter": f"{key} → {subkey}",
-                    "Value": str(subvalue),
-                }
-            )
+            parameters.append(f"{key} → {subkey}")
+            values.append(str(subvalue))
     else:
-        rows.append(
-            {
-                "Parameter": key,
-                "Value": str(value),
-            }
-        )
+        parameters.append(key)
+        values.append(str(value))
 
-config_df = pd.DataFrame(rows)
+config_df = pd.DataFrame({"Parameter": parameters, "Value": values})
+
 config_df["Parameter"] = config_df["Parameter"].str.replace("_", " ").str.title()
 config_df["Parameter"] = (
     config_df["Parameter"].str.replace("Llm", "LLM").str.replace("Csv", "CSV")

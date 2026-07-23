@@ -16,7 +16,7 @@ dependencies = [
     "langchain-text-splitters>0.3,<0.4",
     "litellm>=1.86.2",
     "openai>=2.41.0",
-    "pandas>=2.3.3",
+    "pandas<3",
     "pymupdf>=1.27.2.3",
     "python-dotenv>=1.2.2",
     "pyvis>=0.3.2",
