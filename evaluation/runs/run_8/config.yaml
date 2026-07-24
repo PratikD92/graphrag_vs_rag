@@ -1,0 +1,15 @@
+Chunk Overlap: 100
+Chunk Size: 1200
+Costing:
+  GraphRAG: $0.0080
+  GraphRAG_Evaluation: $0.0073
+  RAG: $0.0009
+  RAG_Evaluation: $0.0029
+Embedding model (GraphRAG & RAG): text-embedding-3-small
+LLM model (GraphRAG & RAG): gpt-5.4-nano
+Prompt Version: v2
+evaluation_embedding_model: text-embedding-3-small
+evaluation_llm_model: gpt-4o-mini
+golden_csv: golden_dataset.csv
+questions: 2
+timestamp: '2026-07-24 17:43:42'

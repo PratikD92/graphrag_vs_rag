@@ -14,6 +14,7 @@ from graphrag.utils.api import get_embedding_store, load_search_prompt
 from graphrag_llm.model_cost_registry import model_cost_registry
 import time
 from typing import Any
+from graphrag_config import PROMPT_V2
 
 PROJECT_DIRECTORY = "."
 COMMUNITY_LEVEL = 2
@@ -124,12 +125,20 @@ def _clear_metrics_store(model: Any) -> None:
         clear_metrics()
 
 
-def _get_local_search_engine():
+def _get_local_search_engine(streamlit_prompt_version: str | None = None):
     description_embedding_store = get_embedding_store(
         config=graphrag_config.vector_store,
         embedding_name=entity_description_embedding,
     )
-    prompt = load_search_prompt(graphrag_config.local_search.prompt)
+
+    if streamlit_prompt_version.lower() == "v2":
+        prompt = load_search_prompt(PROMPT_V2)
+    elif streamlit_prompt_version.lower() == "v1":
+        prompt = load_search_prompt(graphrag_config.local_search.prompt)
+    else:
+        raise ValueError("Invalid GraphRAG prompt version")
+
+    print(f"Using prompt: {prompt} as selected: {streamlit_prompt_version}")
 
     return get_local_search_engine(
         config=graphrag_config,
@@ -206,7 +215,9 @@ async def generate_with_cost_OG(query: str):
     return search_result.response, search_result.context_data, total_latency, cost
 
 
-async def generate_with_cost(query: str, model: str | None = None):
+async def generate_with_cost(
+    query: str, streamlit_prompt_version: str, model: str | None = None
+):
     """Run local search and return GraphRAG token/cost metadata.
 
     GraphRAG's public api.local_search streams the final chat completion and
@@ -223,7 +234,7 @@ async def generate_with_cost(query: str, model: str | None = None):
 
     try:
         start = time.perf_counter()
-        search_engine = _get_local_search_engine()
+        search_engine = _get_local_search_engine(streamlit_prompt_version)
         _clear_metrics_store(search_engine.model)
         _clear_metrics_store(search_engine.context_builder.text_embedder)
 

@@ -1,0 +1,219 @@
+question,expected_answer,source,retrieved_context,generated_answer,retrieval_latency_ms,llm_latency_ms,total_latency_ms,prompt_tokens,completion_tokens,total_tokens
+"What is the total liability cap for the owner-driver personal accident cover bundled with a private car's own-damage and third-party cover, and what percentage of that sum is paid for accidental death?","The total liability of the insurer is capped at Rs. 15 lakhs during any one period of insurance, and 100% of the sum is payable on death.","private-car-package-policy-wording.txt — Section III, Personal Accident Cover for Owner-Driver, Proviso I","Source: goods-carrying-vehicle-liability-policy-wording.txt
+Provided always that
+I.   The compensation shall be payable under only one of
+    the items (i) to (iv) above in respect of the owner-driver
+     arising out of any one occurrence and the total liability of
+    the insurer shall not in the aggregate exceed the sum of `
+   15 Lakhs during any one period of insurance.
+II.  No compensation shall be payable in respect of death or
+    bodily injury directly or indirectly wholly or in part arising
+    or resulting from or traceable to
+(a)  intentional self injury suicide or attempted suicide physical
+    defect or infirmity or (b) an accident happening whilst
+    such person is under the influence of intoxicating liquor or
+    drugs.
+This cover is subject to
+     a.  The owner-driver is the registered owner of the vehicle
+         insured herein;
+      b.  The owner-driver is the insured named in this policy.
+      c.  The owner-driver holds an effective driving license,
+           in accordance with the provisions of Rule 3 of the
+         Central Motor Vehicles Rules, 1989, at the time of the
+         accident.
+III.  The personal accident cover for owner driver is mandatory
+
+Source: 3-years-private-car-liability-policy.txt
+vehicle insured herein;
+                 ii.  The owner-driver is the insured named in this
+               policy.
+                 iii.  The  owner-driver  holds an  effective  driving
+              license, in accordance with the provisions of Rule
+          3 of the Central Motor Vehicles Rules, 1989, at
+            the time of the accident.
+III.  The personal accident cover for owner driver is mandatory
+     for a period of one year and may be extended, in line with
+    the duration of policy, at the discretion of the customer.
+CHAPTER 2 - EXCEPTION AND CONDITION
+1.  GENERAL EXCEPTIONS
+   The Company shall not be liable under this Policy in
+    respect of
+     1.  Any accidental loss or damage and/or liability caused
+        sustained or incurred outside the geographical area;
+     2.  Any claim arising out of any contractual liability;
+     3.  Any accidental loss damage and/or liability caused
+        sustained or incurred whilst the vehicle insured herein
+           is
+         a)  Being used otherwise than in accordance with
+              the. Limitations as to Use. or
+         b)  Being driven by or is for the purpose of being
+
+Source: private-car-package-policy-wording.txt
+than one person any limitation by the terms of this Policy
+     and/or of any Endorsement thereon of the amount of any
+    indemnity shall apply to the aggregate amount of
+    indemnity to all persons indemniﬁed and such indemnity
+     shall apply in priority to the insured.
+Section  III - PERSONAL ACCIDENT COVER FOR OWNER-
+DRIVER
+The Company undertakes to pay compensation as per the
+following scale for bodily injury/death sustained by the owner-
+driver of the vehicle, in direct connection with the vehicle insured
+or whilst driving or mounting into/dismounting from the vehicle
+insured or whilst traveling in it as a co-driver, caused by violent
+accidental external and visible means which independent of
+any other cause shall within six calendar months of such injury
+result in:
+
+Source: 3-years-private-car-liability-policy.txt
+(iii) Loss of one limb or sight of one eye       50%
+ (iv) Permanent total disablement from inju­                                  100%     ries other than named above.
+Provided always that
+I.   Compensation shall be payable under only one of the
+    items (i) to (iv) above in respect of the owner-driver arising
+    out of any one occurrence and the total liability of the
+    insurer shall not in the aggregate exceed the sum of ₹ 15
+    lakhs during any one period of insurance.
+II.  No compensation shall be payable in respect of death or
+    bodily injury directly or indirectly wholly or in part arising
+    or resulting from or traceable to (1) intentional self-injury
+    suicide or attempted suicide physical defect or infirmity or
+     (2) an accident happening whilst such person is under the
+    influence of intoxicating liquor or drugs.
+    Such compensation shall be payable directly to the insured
+    or to his/her legal representatives whose receipt shall be
+    the full discharge in respect of the injury to the insured.
+     a.  This cover is subject to
+                 i.   The owner-driver is the registered owner of the
+             vehicle insured herein;
+
+Source: compulsory-personal-accident-owner-driver-policy-wording.txt
+or resulting from or traceable to (1) intentional self injury,
+   suicide or attempted suicide physical defect or infirmity
+   or (2) an accident happening whilst such person is under
+   the influence of intoxicating liquor, drugs or any other
+   substance abuse.
+III. Such compensation shall be payable directly to the insured or
+   to his/her legal representatives/Nominee whose receipt shall
+   be the full discharge in respect of the injury to the insured.
+IV. This cover is subject to
+      a. The owner-driver  is the registered owner of the
+         vehicle whilst driving which, including mounting into/
+        dismounting from or traveling in, the owner-driver
+        sustained bodily injury/ death;
+      b. The owner-driver is the insured named under this
+         policy and the policy being valid on the date of loss
+RDAN115RP0034V01201819","## Total liability cap (owner-driver personal accident cover)
+The insurer’s **total liability for the owner-driver personal accident cover** is capped at **₹ 15 lakhs** in the aggregate **during any one period of insurance**.  
+[Data: goods-carrying-vehicle-liability-policy-wording.txt (Provided always that I); 3-years-private-car-liability-policy.txt (Provided always that I)]
+
+## Percentage paid for accidental death
+Under the personal accident scale, **accidental death is paid at 100%** of the applicable sum (i.e., the full amount under the cover).  
+[Data: 3-years-private-car-liability-policy.txt (iii) +more; private-car-package-policy-wording.txt (Section III - Personal Accident Cover for Owner-Driver)]
+
+### Therefore
+- **Cap amount:** ₹ 15 lakhs  
+- **Accidental death payout:** **100% of ₹ 15 lakhs = ₹ 15 lakhs**  
+[Data: goods-carrying-vehicle-liability-policy-wording.txt (Provided always that I); 3-years-private-car-liability-policy.txt (Provided always that I)]",2193.7792920070933,3743.194750000839,5937.790666997898,2592,238,2830
+Within how many calendar months of the injury must death or disablement occur for an owner-driver personal accident benefit to be payable under a bundled private car cover?,The death or disablement must occur within six calendar months of the injury for compensation to be payable.,"private-car-package-policy-wording.txt — Section III, Personal Accident Cover for Owner-Driver","Source: 3-years-private-car-liability-policy.txt
+(iii) Loss of one limb or sight of one eye       50%
+ (iv) Permanent total disablement from inju­                                  100%     ries other than named above.
+Provided always that
+I.   Compensation shall be payable under only one of the
+    items (i) to (iv) above in respect of the owner-driver arising
+    out of any one occurrence and the total liability of the
+    insurer shall not in the aggregate exceed the sum of ₹ 15
+    lakhs during any one period of insurance.
+II.  No compensation shall be payable in respect of death or
+    bodily injury directly or indirectly wholly or in part arising
+    or resulting from or traceable to (1) intentional self-injury
+    suicide or attempted suicide physical defect or infirmity or
+     (2) an accident happening whilst such person is under the
+    influence of intoxicating liquor or drugs.
+    Such compensation shall be payable directly to the insured
+    or to his/her legal representatives whose receipt shall be
+    the full discharge in respect of the injury to the insured.
+     a.  This cover is subject to
+                 i.   The owner-driver is the registered owner of the
+             vehicle insured herein;
+
+Source: private-car-package-policy-wording.txt
+than one person any limitation by the terms of this Policy
+     and/or of any Endorsement thereon of the amount of any
+    indemnity shall apply to the aggregate amount of
+    indemnity to all persons indemniﬁed and such indemnity
+     shall apply in priority to the insured.
+Section  III - PERSONAL ACCIDENT COVER FOR OWNER-
+DRIVER
+The Company undertakes to pay compensation as per the
+following scale for bodily injury/death sustained by the owner-
+driver of the vehicle, in direct connection with the vehicle insured
+or whilst driving or mounting into/dismounting from the vehicle
+insured or whilst traveling in it as a co-driver, caused by violent
+accidental external and visible means which independent of
+any other cause shall within six calendar months of such injury
+result in:
+
+Source: personal-protect-policy_policy-wordings.txt
+within twelve months from the date of Accident
+resulting in such Injury. Provided that the date
+of occurrence of the Accident falls within the
+Policy Period
+Benefit 2: Insured Event - Permanent Total
+Disablement (PTD) resulting from Accident
+The Company hereby agrees, subject to the
+terms, conditions and exclusions applicable to
+this Section 2.2 and the terms, conditions,
+general exclusions stated in the Policy, to pay
+such Sum Insured, in the manner indicated
+below, on the occurrence of any of the following
+losses, provide such losses to the Insured
+Person  are  total and  irrecoverable  losses
+which result solely and directly from an Injury,
+within twelve months from the date of Accident
+resulting in such Injury. Provided that the date
+of occurrence of the Accident falls within the
+Policy Period/Policy Year:
+     i)  Loss of Use of both eyes, or Physical
+      Separation/ Loss of Use of two entire
+     hands or two entire feet, or one entire
+     hand and one entire foot, or of such Loss
+      of Use of one eye and such Physical
+      Separation/ Loss of Use of one entire
+     hand or one entire foot, then the Sum
+     Insured  as  stated  under  Benefit  2,
+
+Source: compulsory-personal-accident-owner-driver-policy-wording.txt
+Product Code: 3012   UIN: IR
+
+CHAPTER 1  - STANDARD FORM FOR COMPULSORY
+PERSONAL ACCIDENT (OWNER-DRIVER) UNDER MOTOR
+INSURANCE POLICY
+The Company undertakes to pay compensation as per the
+following scale for bodily injury/ death sustained by the owner-
+driver of the vehicle, in direct connection with the vehicle or
+whilst driving or mounting into/dismounting from the vehicle or
+whilst traveling in it as a co-driver, caused by violent accidental
+external and visible means which independent of any other
+cause shall within six calendar months of such injury result in:
+
+Source: compulsory-personal-accident-owner-driver-policy-wording.txt
+or resulting from or traceable to (1) intentional self injury,
+   suicide or attempted suicide physical defect or infirmity
+   or (2) an accident happening whilst such person is under
+   the influence of intoxicating liquor, drugs or any other
+   substance abuse.
+III. Such compensation shall be payable directly to the insured or
+   to his/her legal representatives/Nominee whose receipt shall
+   be the full discharge in respect of the injury to the insured.
+IV. This cover is subject to
+      a. The owner-driver  is the registered owner of the
+         vehicle whilst driving which, including mounting into/
+        dismounting from or traveling in, the owner-driver
+        sustained bodily injury/ death;
+      b. The owner-driver is the insured named under this
+         policy and the policy being valid on the date of loss
+RDAN115RP0034V01201819","## Answer
+For the owner-driver personal accident benefit under a bundled private car cover, **death or disablement must occur within 6 calendar months of the injury**.  
+
+[Data: compulsory-personal-accident-owner-driver-policy-wording.txt (RDAN115RP0034V01201819); compulsory-personal-accident-owner-driver-policy-wording.txt (RDAN115RP0034V01201819)]",844.0599169989582,1368.998541001929,2214.538125001127,2396,89,2485

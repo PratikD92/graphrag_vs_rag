@@ -1,6 +1,6 @@
 from weaviate.classes.query import MetadataQuery
 from .weaviate_client import get_weaviate_client
-from .prompt_gen import generate_prompt
+from .prompt_gen import generate_prompt_v1, generate_prompt_v2
 from dotenv import load_dotenv
 from openai import OpenAI
 import os, time
@@ -54,7 +54,7 @@ def retrieve_chunks(query_text: str):
 #     Which policy documents are relevant and why?"""
 
 
-def generate_rag_answer(query, llm_model):
+def generate_rag_answer(query, streamlit_prompt_version, llm_model):
 
     total_start = time.perf_counter()
 
@@ -69,8 +69,14 @@ def generate_rag_answer(query, llm_model):
 
     context = "\n\n".join(f"Source: {c['source']}\n{c['text_content']}" for c in chunks)
 
-    prompt = generate_prompt(query, context)
+    if streamlit_prompt_version.lower() == "v1":
+        prompt = generate_prompt_v1(query, context)
+    elif streamlit_prompt_version.lower() == "v2":
+        prompt = generate_prompt_v2(query, context)
+    else:
+        raise ValueError("Invalid RAG prompt version")
 
+    print(f"Version: {streamlit_prompt_version} | {prompt}")
     llm_start = time.perf_counter()
 
     model = RAG_LLM_MODEL  # fall back to .env default if not overridden

@@ -167,7 +167,11 @@ with st.form("run_evaluation"):
 
 if submitted:
     try:
-        evaluate_ragas(llm_model=generation_llm_model, sample_size=sample_size)
+        evaluate_ragas(
+            streamlit_prompt_version=prompt_version,
+            llm_model=generation_llm_model,
+            sample_size=sample_size,
+        )
         st.success("Evaluation Successful!")
         st.rerun()
     except Exception as e:

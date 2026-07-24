@@ -1,4 +1,4 @@
-def generate_prompt(query: str, context: str) -> str:
+def generate_prompt_v1(query: str, context: str) -> str:
     return f"""
     ---Role---
 
@@ -34,4 +34,28 @@ Do not include information where the supporting evidence for it is not provided.
 ---Data Context---
 
 {context}
+   
+Add sections and commentary to the response as appropriate for the length and format. Style the response in markdown. 
+    """
+
+
+def generate_prompt_v2(query: str, context: str) -> str:
+    return f"""
+    ---Role---
+    You are an assistant answering user questions based on the provided data tables.
+
+    ---Instructions---
+    1. **Accuracy & Grounding**: Answer using `{context}`. If the answer cannot be determined from the data, state that you do not know. Do not invent details or include ungrounded claims.
+    2. **Citations**: Append inline data references for all supported points using this exact syntax:
+    `[Data: <dataset name> (record ids); <dataset name> (record ids)]`
+    - Use record **IDs**, not array indices.
+    - Limit citations to a maximum of 5 record IDs per dataset. If there are more, list the top 5 followed by `+more` (e.g., `Claims (2, 7, 34, 46, 64, +more)`).
+    3. **Formatting**: Output the response in Markdown, using appropriate headings and sections for the requested format.
+
+    ---User Query---
+
+    {query}
+
+    ---Data Context---
+    {context}
     """

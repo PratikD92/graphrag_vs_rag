@@ -53,12 +53,18 @@ async def generate_async(query: str):
     return await generate(query=query)
 
 
-async def generate_with_cost_async(query: str, model: str | None = None):
+async def generate_with_cost_async(
+    query: str, streamlit_prompt_version: str, model: str | None = None
+):
     # return await generate_with_cost(query=query)
-    return await generate_with_cost(query=query, model=model)
+    return await generate_with_cost(
+        streamlit_prompt_version=streamlit_prompt_version, query=query, model=model
+    )
 
 
-def evaluate_ragas(llm_model: str | None = None, sample_size: int = 35):
+def evaluate_ragas(
+    streamlit_prompt_version: str, llm_model: str | None = None, sample_size: int = 35
+):
 
     streamlit_model = None
     if llm_model:
@@ -73,7 +79,7 @@ def evaluate_ragas(llm_model: str | None = None, sample_size: int = 35):
             for _, row in gold[:sample_size].iterrows():
                 # print(f"Processing query {_+1}/{questions}")
                 print(
-                    f"Processing query {_+1}/{questions}".ljust(50),
+                    f"Processing query {_+1}/{sample_size}".ljust(50),
                     end="\r",
                     flush=True,
                 )
@@ -93,7 +99,11 @@ def evaluate_ragas(llm_model: str | None = None, sample_size: int = 35):
                     prompt_tokens,
                     completion_tokens,
                     rag_model_used,
-                ) = generate_rag_answer(question, llm_model=streamlit_model)
+                ) = generate_rag_answer(
+                    question,
+                    streamlit_prompt_version=streamlit_prompt_version,
+                    llm_model=streamlit_model,
+                )
 
                 # Store results
                 rows.append(
@@ -135,7 +145,11 @@ def evaluate_ragas(llm_model: str | None = None, sample_size: int = 35):
                 )
                 question = row["question"]
                 answer, context, total_latency, query_cost = asyncio.run(
-                    generate_with_cost_async(query=question, model=streamlit_model)
+                    generate_with_cost_async(
+                        query=question,
+                        streamlit_prompt_version=streamlit_prompt_version,
+                        model=streamlit_model,
+                    )
                 )
 
                 rows.append(
@@ -164,11 +178,12 @@ def evaluate_ragas(llm_model: str | None = None, sample_size: int = 35):
     configuration = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "golden_csv": golden_csv,
-        "questions": questions,
+        "questions": sample_size,
         "evaluation_llm_model": EVALUATION_LLM_MODEL,
         "evaluation_embedding_model": EVALUATION_EMBEDDING_MODEL,
         "LLM model (GraphRAG & RAG)": rag_model_used,
         "Embedding model (GraphRAG & RAG)": EVALUATION_EMBEDDING_MODEL,
+        "Prompt Version": streamlit_prompt_version,
         "Costing": {
             "RAG": f"${float(rag_cost_df['cost'].sum()):.4f}",
             "RAG_Evaluation": f"${rag_eval_cost:.4f}",
